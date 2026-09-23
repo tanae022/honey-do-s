@@ -1,0 +1,630 @@
+// Version: 4.0.0
+type AccessControlState__201339279 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__230067015<Principal, UserRole__91647283>
+  };
+type Appointment__267637089 =
+  {confirmed : Bool; scheduledAt : Timestamp__838678315};
+type Appointment__645622459 =
+  {confirmed : Bool; scheduledAt : Timestamp__431270009};
+type Appointment__721566332 =
+  {confirmed : Bool; scheduledAt : Timestamp__1023459469};
+type Appointment__789944702 =
+  {confirmed : Bool; scheduledAt : Timestamp__722820981};
+type Appointment__82985016 =
+  {confirmed : Bool; scheduledAt : Timestamp__634641852};
+type Appointment__93510075 =
+  {confirmed : Bool; scheduledAt : Timestamp__589055049};
+type BeeId__306105543 = Nat;
+type BeeId__430263430 = Nat;
+type BeeId__448184871 = BeeId__430263430;
+type BeeId__742503357 = Nat;
+type BeeId__789279990 = Nat;
+type BeeId__880210724 = Nat;
+type Bee__1063928385 =
+  {
+    createdAt : Timestamp__838678315;
+    id : BeeId__448184871;
+    name : Text;
+    specialty : Text
+  };
+type Bee__151050700 =
+  {
+    createdAt : Timestamp__722820981;
+    id : BeeId__306105543;
+    name : Text;
+    specialty : Text
+  };
+type Bee__284049255 =
+  {
+    createdAt : Timestamp__1023459469;
+    id : BeeId__789279990;
+    name : Text;
+    specialty : Text
+  };
+type Bee__651365387 =
+  {
+    createdAt : Timestamp__589055049;
+    id : BeeId__742503357;
+    name : Text;
+    specialty : Text
+  };
+type Bee__954180335 =
+  {
+    createdAt : Timestamp__634641852;
+    id : BeeId__880210724;
+    name : Text;
+    specialty : Text
+  };
+type Data__44217153<K, V> = {var count : Nat__227979830; kvs : [var ?(K, V)]};
+type Deposit__219413753 =
+  {
+    amount : Nat;
+    method : PaymentMethod__530772223;
+    paid : Bool;
+    paidAt : ?Timestamp__722820981;
+    stripeSessionId : ?Text
+  };
+type Deposit__286255559 =
+  {
+    amount : Nat;
+    method : PaymentMethod__218349518;
+    paid : Bool;
+    paidAt : ?Timestamp__589055049;
+    stripeSessionId : ?Text
+  };
+type Deposit__328562343 =
+  {
+    amount : Nat;
+    method : PaymentMethod__153120948;
+    paid : Bool;
+    paidAt : ?Timestamp__838678315;
+    stripeSessionId : ?Text
+  };
+type Deposit__768549982 =
+  {
+    amount : Nat;
+    method : PaymentMethod__866664207;
+    paid : Bool;
+    paidAt : ?Timestamp__634641852;
+    stripeSessionId : ?Text
+  };
+type Deposit__795608357 =
+  {
+    amount : Nat;
+    method : PaymentMethod__990902462;
+    paid : Bool;
+    paidAt : ?Timestamp__1023459469;
+    stripeSessionId : ?Text
+  };
+type Deposit__897069808 =
+  {
+    amount : Nat;
+    method : PaymentMethod__466522783;
+    paid : Bool;
+    paidAt : ?Timestamp__431270009;
+    stripeSessionId : ?Text
+  };
+type Internal__283199666<K, V> =
+  {children : [var ?Node__204828119<K, V>]; data : Data__44217153<K, V>};
+type JobId__161715245 = Nat;
+type JobId__339598917 = Nat;
+type JobId__567733654 = JobId__339598917;
+type JobId__7831625 = Nat;
+type JobId__865958762 = Nat;
+type JobId__875668256 = Nat;
+type JobId__934871385 = Nat;
+type JobRequest__28781565 =
+  {
+    var appointment : ?Appointment__789944702;
+    var assignedBeeId : ?BeeId__306105543;
+    category : ServiceCategory__455051050;
+    var completedAt : ?Timestamp__722820981;
+    createdAt : Timestamp__722820981;
+    customerName : Text;
+    var deposit : ?Deposit__219413753;
+    description : Text;
+    email : Text;
+    id : JobId__7831625;
+    ownParts : Bool;
+    var packageEnrollment : ?PackageEnrollment__777628022;
+    phone : Text;
+    photoIds : [PhotoId__957136173];
+    preferredTiming : Text;
+    var quote : ?Quote__53126422;
+    referenceCode : ReferenceCode__268168033;
+    var review : ?Review__702228032;
+    var status : JobStatus__695630886
+  };
+type JobRequest__450632087 =
+  {
+    var appointment : ?Appointment__267637089;
+    var assignedBeeId : ?BeeId__448184871;
+    category : ServiceCategory__468793389;
+    var completedAt : ?Timestamp__838678315;
+    createdAt : Timestamp__838678315;
+    customerName : Text;
+    var deposit : ?Deposit__328562343;
+    description : Text;
+    email : Text;
+    id : JobId__567733654;
+    ownParts : Bool;
+    var packageEnrollment : ?PackageEnrollment__759782242;
+    phone : Text;
+    photoIds : [PhotoId__172310488];
+    preferredTiming : Text;
+    var quote : ?Quote__291403262;
+    referenceCode : ReferenceCode__118950948;
+    var review : ?Review__38972594;
+    var status : JobStatus__374926235
+  };
+type JobRequest__644824362 =
+  {
+    var appointment : ?Appointment__645622459;
+    category : ServiceCategory__882002514;
+    createdAt : Timestamp__431270009;
+    customerName : Text;
+    var deposit : ?Deposit__897069808;
+    description : Text;
+    email : Text;
+    id : JobId__934871385;
+    phone : Text;
+    photoIds : [PhotoId__975859637];
+    preferredTiming : Text;
+    var quote : ?Quote__1067618800;
+    referenceCode : ReferenceCode__430280898;
+    var review : ?Review__957427032;
+    var status : JobStatus__1044281027
+  };
+type JobStatus__1044281027 =
+  {#completed; #inProgress; #quoted; #requested; #scheduled};
+type JobStatus__374926235 =
+  {#completed; #inProgress; #quoted; #requested; #scheduled};
+type JobStatus__400795939 =
+  {#completed; #inProgress; #quoted; #requested; #scheduled};
+type JobStatus__695630886 =
+  {#completed; #inProgress; #quoted; #requested; #scheduled};
+type JobStatus__933215291 =
+  {#completed; #inProgress; #quoted; #requested; #scheduled};
+type JobStatus__955688460 =
+  {#completed; #inProgress; #quoted; #requested; #scheduled};
+type Leaf__598469445<K, V> = {data : Data__44217153<K, V>};
+type Map__230067015<K, V> = Map__405889023<K, V>;
+type Map__405889023<K, V> = Map__603270868<K, V>;
+type Map__603270868<K, V> =
+  {var root : Node__204828119<K, V>; var size : Nat__227979830};
+type Nat__227979830 = Nat__920180692;
+type Nat__920180692 = Nat;
+type NewActor__210063598 =
+  {
+    accessControlState : AccessControlState__201339279;
+    bees : Map__230067015<BeeId__306105543, Bee__151050700>;
+    jobs : Map__230067015<JobId__7831625, JobRequest__28781565>;
+    ownerEmail : {var address : Text};
+    state : {var nextBeeId : Nat; var nextJobId : Nat};
+    stripeConfiguration : {var config : ?StripeConfiguration__622304438}
+  };
+type NewActor__269912 =
+  {
+    accessControlState : AccessControlState__201339279;
+    jobs : Map__230067015<JobId__934871385, JobRequest__644824362>;
+    state : {var nextJobId : Nat};
+    stripeConfiguration : {var config : ?StripeConfiguration__395150437}
+  };
+type NewActor__616742518 =
+  {
+    accessControlState : AccessControlState__201339279;
+    bees : Map__230067015<BeeId__789279990, Bee__284049255>;
+    jobs : Map__230067015<JobId__875668256, NewJobRequest__27502434>;
+    state : {var nextBeeId : Nat; var nextJobId : Nat};
+    stripeConfiguration : {var config : ?StripeConfiguration__584059908}
+  };
+type NewActor__868806984 =
+  {
+    accessControlState : AccessControlState__201339279;
+    bees : Map__230067015<BeeId__880210724, Bee__954180335>;
+    jobs : Map__230067015<JobId__865958762, NewJobRequest__1026701313>;
+    state : {var nextBeeId : Nat; var nextJobId : Nat};
+    stripeConfiguration : {var config : ?StripeConfiguration__269253814}
+  };
+type NewActor__921165739 =
+  {
+    accessControlState : AccessControlState__201339279;
+    bees : Map__230067015<BeeId__742503357, Bee__651365387>;
+    jobs : Map__230067015<JobId__161715245, NewJobRequest__838604144>;
+    state : {var nextBeeId : Nat; var nextJobId : Nat};
+    stripeConfiguration : {var config : ?StripeConfiguration__137828028}
+  };
+type NewJobRequest__1026701313 =
+  {
+    var appointment : ?Appointment__82985016;
+    var assignedBeeId : ?BeeId__880210724;
+    category : ServiceCategory__690107184;
+    var completedAt : ?Timestamp__634641852;
+    createdAt : Timestamp__634641852;
+    customerName : Text;
+    var deposit : ?Deposit__768549982;
+    description : Text;
+    email : Text;
+    id : JobId__865958762;
+    var packageEnrollment : ?PackageEnrollment__763485505;
+    phone : Text;
+    photoIds : [PhotoId__258279408];
+    preferredTiming : Text;
+    var quote : ?Quote__1003244393;
+    referenceCode : ReferenceCode__320809005;
+    var review : ?Review__587608747;
+    var status : JobStatus__933215291
+  };
+type NewJobRequest__27502434 =
+  {
+    var appointment : ?Appointment__721566332;
+    var assignedBeeId : ?BeeId__789279990;
+    category : NewServiceCategory__253842331;
+    var completedAt : ?Timestamp__1023459469;
+    createdAt : Timestamp__1023459469;
+    customerName : Text;
+    var deposit : ?Deposit__795608357;
+    description : Text;
+    email : Text;
+    id : JobId__875668256;
+    ownParts : Bool;
+    var packageEnrollment : ?PackageEnrollment__887255651;
+    phone : Text;
+    photoIds : [PhotoId__182112578];
+    preferredTiming : Text;
+    var quote : ?Quote__494412939;
+    referenceCode : ReferenceCode__403261974;
+    var review : ?Review__314004496;
+    var status : JobStatus__400795939
+  };
+type NewJobRequest__838604144 =
+  {
+    var appointment : ?Appointment__93510075;
+    var assignedBeeId : ?BeeId__742503357;
+    category : ServiceCategory__720061073;
+    var completedAt : ?Timestamp__589055049;
+    createdAt : Timestamp__589055049;
+    customerName : Text;
+    var deposit : ?Deposit__286255559;
+    description : Text;
+    email : Text;
+    id : JobId__161715245;
+    ownParts : Bool;
+    var packageEnrollment : ?PackageEnrollment__1072233271;
+    phone : Text;
+    photoIds : [PhotoId__72064130];
+    preferredTiming : Text;
+    var quote : ?NewQuote__243082359;
+    referenceCode : ReferenceCode__727375081;
+    var review : ?Review__631370593;
+    var status : JobStatus__955688460
+  };
+type NewQuote__243082359 =
+  {
+    amount : Nat;
+    discountAmount : Nat;
+    discountApplied : Bool;
+    note : Text;
+    sentAt : Timestamp__589055049
+  };
+type NewServiceCategory__253842331 =
+  {
+    #cleanOrganize;
+    #errands;
+    #fixIt;
+    #house;
+    #moveLift;
+    #mowing;
+    #showMe;
+    #yardPlants
+  };
+type Node__204828119<K, V> =
+  {#internal : Internal__283199666<K, V>; #leaf : Leaf__598469445<K, V>};
+type OldActor__516742270 =
+  {
+    accessControlState : AccessControlState__201339279;
+    bees : Map__230067015<BeeId__789279990, Bee__284049255>;
+    jobs : Map__230067015<JobId__875668256, OldJobRequest__782101514>;
+    state : {var nextBeeId : Nat; var nextJobId : Nat};
+    stripeConfiguration : {var config : ?StripeConfiguration__584059908}
+  };
+type OldActor__784182129 =
+  {
+    accessControlState : AccessControlState__201339279;
+    bees : Map__230067015<BeeId__742503357, Bee__651365387>;
+    jobs : Map__230067015<JobId__161715245, OldJobRequest__313503294>;
+    state : {var nextBeeId : Nat; var nextJobId : Nat};
+    stripeConfiguration : {var config : ?StripeConfiguration__137828028}
+  };
+type OldActor__836494563 =
+  {
+    accessControlState : AccessControlState__201339279;
+    jobs : Map__230067015<JobId__865958762, OldJobRequest__629430991>;
+    state : {var nextJobId : Nat};
+    stripeConfiguration : {var config : ?StripeConfiguration__269253814}
+  };
+type OldActor__872396144 =
+  {
+    accessControlState : AccessControlState__201339279;
+    bees : Map__230067015<BeeId__306105543, Bee__151050700>;
+    jobs : Map__230067015<JobId__7831625, JobRequest__28781565>;
+    state : {var nextBeeId : Nat; var nextJobId : Nat};
+    stripeConfiguration : {var config : ?StripeConfiguration__622304438}
+  };
+type OldJobRequest__313503294 =
+  {
+    var appointment : ?Appointment__93510075;
+    var assignedBeeId : ?BeeId__742503357;
+    category : ServiceCategory__720061073;
+    var completedAt : ?Timestamp__589055049;
+    createdAt : Timestamp__589055049;
+    customerName : Text;
+    var deposit : ?Deposit__286255559;
+    description : Text;
+    email : Text;
+    id : JobId__161715245;
+    var packageEnrollment : ?PackageEnrollment__1072233271;
+    phone : Text;
+    photoIds : [PhotoId__72064130];
+    preferredTiming : Text;
+    var quote : ?OldQuote__594311083;
+    referenceCode : ReferenceCode__727375081;
+    var review : ?Review__631370593;
+    var status : JobStatus__955688460
+  };
+type OldJobRequest__629430991 =
+  {
+    var appointment : ?Appointment__82985016;
+    category : ServiceCategory__690107184;
+    createdAt : Timestamp__634641852;
+    customerName : Text;
+    var deposit : ?Deposit__768549982;
+    description : Text;
+    email : Text;
+    id : JobId__865958762;
+    phone : Text;
+    photoIds : [PhotoId__258279408];
+    preferredTiming : Text;
+    var quote : ?Quote__1003244393;
+    referenceCode : ReferenceCode__320809005;
+    var review : ?Review__587608747;
+    var status : JobStatus__933215291
+  };
+type OldJobRequest__782101514 =
+  {
+    var appointment : ?Appointment__721566332;
+    var assignedBeeId : ?BeeId__789279990;
+    category : OldServiceCategory__795105461;
+    var completedAt : ?Timestamp__1023459469;
+    createdAt : Timestamp__1023459469;
+    customerName : Text;
+    var deposit : ?Deposit__795608357;
+    description : Text;
+    email : Text;
+    id : JobId__875668256;
+    ownParts : Bool;
+    var packageEnrollment : ?PackageEnrollment__887255651;
+    phone : Text;
+    photoIds : [PhotoId__182112578];
+    preferredTiming : Text;
+    var quote : ?Quote__494412939;
+    referenceCode : ReferenceCode__403261974;
+    var review : ?Review__314004496;
+    var status : JobStatus__400795939
+  };
+type OldQuote__594311083 =
+  {amount : Nat; note : Text; sentAt : Timestamp__589055049};
+type OldServiceCategory__795105461 =
+  {
+    #cleanOrganize;
+    #driving;
+    #errands;
+    #fixIt;
+    #house;
+    #moveLift;
+    #mowing;
+    #showMe;
+    #yardPlants
+  };
+type PackageEnrollment__1072233271 =
+  {
+    active : Bool;
+    includedVisits : Nat;
+    monthlyPrice : Nat;
+    startedAt : Timestamp__589055049
+  };
+type PackageEnrollment__759782242 =
+  {
+    active : Bool;
+    includedVisits : Nat;
+    monthlyPrice : Nat;
+    startedAt : Timestamp__838678315
+  };
+type PackageEnrollment__763485505 =
+  {
+    active : Bool;
+    includedVisits : Nat;
+    monthlyPrice : Nat;
+    startedAt : Timestamp__634641852
+  };
+type PackageEnrollment__777628022 =
+  {
+    active : Bool;
+    includedVisits : Nat;
+    monthlyPrice : Nat;
+    startedAt : Timestamp__722820981
+  };
+type PackageEnrollment__887255651 =
+  {
+    active : Bool;
+    includedVisits : Nat;
+    monthlyPrice : Nat;
+    startedAt : Timestamp__1023459469
+  };
+type PaymentMethod__153120948 = {#cashApp; #stripe};
+type PaymentMethod__218349518 = {#cashApp; #stripe};
+type PaymentMethod__466522783 = {#cashApp; #stripe};
+type PaymentMethod__530772223 = {#cashApp; #stripe};
+type PaymentMethod__866664207 = {#cashApp; #stripe};
+type PaymentMethod__990902462 = {#cashApp; #stripe};
+type PhotoId__172310488 = PhotoId__38188305;
+type PhotoId__182112578 = Text;
+type PhotoId__258279408 = Text;
+type PhotoId__38188305 = Text;
+type PhotoId__72064130 = Text;
+type PhotoId__957136173 = Text;
+type PhotoId__975859637 = Text;
+type Quote__1003244393 =
+  {amount : Nat; note : Text; sentAt : Timestamp__634641852};
+type Quote__1067618800 =
+  {amount : Nat; note : Text; sentAt : Timestamp__431270009};
+type Quote__291403262 =
+  {
+    amount : Nat;
+    discountAmount : Nat;
+    discountApplied : Bool;
+    note : Text;
+    sentAt : Timestamp__838678315
+  };
+type Quote__494412939 =
+  {
+    amount : Nat;
+    discountAmount : Nat;
+    discountApplied : Bool;
+    note : Text;
+    sentAt : Timestamp__1023459469
+  };
+type Quote__53126422 =
+  {
+    amount : Nat;
+    discountAmount : Nat;
+    discountApplied : Bool;
+    note : Text;
+    sentAt : Timestamp__722820981
+  };
+type ReferenceCode__118950948 = ReferenceCode__647223542;
+type ReferenceCode__268168033 = Text;
+type ReferenceCode__320809005 = Text;
+type ReferenceCode__403261974 = Text;
+type ReferenceCode__430280898 = Text;
+type ReferenceCode__647223542 = Text;
+type ReferenceCode__727375081 = Text;
+type Review__314004496 =
+  {comment : Text; createdAt : Timestamp__1023459469; rating : Nat};
+type Review__38972594 =
+  {comment : Text; createdAt : Timestamp__838678315; rating : Nat};
+type Review__587608747 =
+  {comment : Text; createdAt : Timestamp__634641852; rating : Nat};
+type Review__631370593 =
+  {comment : Text; createdAt : Timestamp__589055049; rating : Nat};
+type Review__702228032 =
+  {comment : Text; createdAt : Timestamp__722820981; rating : Nat};
+type Review__957427032 =
+  {comment : Text; createdAt : Timestamp__431270009; rating : Nat};
+type ServiceCategory__455051050 =
+  {
+    #cleanOrganize;
+    #errands;
+    #fixIt;
+    #house;
+    #moveLift;
+    #mowing;
+    #showMe;
+    #yardPlants
+  };
+type ServiceCategory__468793389 =
+  {
+    #cleanOrganize;
+    #errands;
+    #fixIt;
+    #house;
+    #moveLift;
+    #mowing;
+    #showMe;
+    #yardPlants
+  };
+type ServiceCategory__690107184 =
+  {
+    #cleanOrganize;
+    #driving;
+    #errands;
+    #fixIt;
+    #house;
+    #moveLift;
+    #mowing;
+    #showMe;
+    #yardPlants
+  };
+type ServiceCategory__720061073 =
+  {
+    #cleanOrganize;
+    #driving;
+    #errands;
+    #fixIt;
+    #house;
+    #moveLift;
+    #mowing;
+    #showMe;
+    #yardPlants
+  };
+type ServiceCategory__882002514 =
+  {
+    #cleanOrganize;
+    #driving;
+    #errands;
+    #fixIt;
+    #house;
+    #moveLift;
+    #mowing;
+    #showMe;
+    #yardPlants
+  };
+type StripeConfiguration__137828028 =
+  {allowedCountries : [Text]; secretKey : Text};
+type StripeConfiguration__269253814 =
+  {allowedCountries : [Text]; secretKey : Text};
+type StripeConfiguration__395150437 =
+  {allowedCountries : [Text]; secretKey : Text};
+type StripeConfiguration__584059908 =
+  {allowedCountries : [Text]; secretKey : Text};
+type StripeConfiguration__622304438 =
+  {allowedCountries : [Text]; secretKey : Text};
+type StripeConfiguration__979313427 =
+  {allowedCountries : [Text]; secretKey : Text};
+type Timestamp__1023459469 = Int;
+type Timestamp__301639476 = Int;
+type Timestamp__431270009 = Int;
+type Timestamp__589055049 = Int;
+type Timestamp__634641852 = Int;
+type Timestamp__722820981 = Int;
+type Timestamp__838678315 = Timestamp__301639476;
+type UserRole__91647283 = {#admin; #guest; #user};
+{
+  "20260919_000000" : (_old : {}) -> NewActor__269912;
+  "20260919_120000" : (old : OldActor__836494563) -> NewActor__868806984;
+  "20260919_180000" : (old : OldActor__784182129) -> NewActor__921165739;
+  "20260919_200000" : (old : OldActor__516742270) -> NewActor__616742518;
+  "20260919_210000" : (old : OldActor__872396144) -> NewActor__210063598
+}
+actor  {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__230067015<Principal, UserRole__91647283>
+    };
+  stable bees :
+    {
+      var root : Node__204828119<BeeId__448184871, Bee__1063928385>;
+      var size : Nat__227979830
+    };
+  stable jobs :
+    {
+      var root : Node__204828119<JobId__567733654, JobRequest__450632087>;
+      var size : Nat__227979830
+    };
+  stable ownerEmail : {var address : Text};
+  stable state : {var nextBeeId : Nat; var nextJobId : Nat};
+  stable stripeConfiguration : {var config : ?StripeConfiguration__979313427}
+};

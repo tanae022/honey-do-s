@@ -1,0 +1,18 @@
+{
+  "overview": "A handyman job-request app where customers submit service requests and the owner is notified by email.",
+  "features": [
+    "Submit a job request with contact details and photos",
+    "Owner is emailed every new request with customer details and a reference code",
+    "Track a request by reference code",
+    "Admin dashboard with customer contact details",
+    "Owner phone number shown as a tap-to-call link"
+  ],
+  "category": "productivity",
+  "tags": [
+    "handyman",
+    "job-requests",
+    "notifications",
+    "admin-dashboard"
+  ],
+  "last_updated": "2026-09-19T15:41:19.863Z"
+}

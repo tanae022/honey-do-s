@@ -1,0 +1,413 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ */
+/* Bundled fonts — unchanged from the existing Honey Do's identity.    */
+/* ------------------------------------------------------------------ */
+@font-face {
+  font-family: "Fraunces";
+  src: url("/assets/fonts/Fraunces.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/assets/fonts/Figtree.woff2") format("woff2");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/assets/fonts/JetBrainsMono.woff2") format("woff2");
+  font-display: swap;
+}
+
+@layer base {
+  /* ---------------------------------------------------------------- */
+  /* Honey Do's — dark honeycomb identity, re-tuned to the official    */
+  /* logo: pure-black hive base, glossy amber honeycomb cells,         */
+  /* metallic gold bevels. Dark theme is primary; :root mirrors it.    */
+  /* ---------------------------------------------------------------- */
+  :root,
+  .dark {
+    --font-display: "Fraunces";
+    --font-body: "Figtree";
+    --font-mono: "JetBrains Mono";
+    --radius: 1.125rem;
+
+    /* Near-black hive base — the logo's #0A0805 field, warm-shifted */
+    --background: 0.1 0.01 72;
+    --foreground: 0.955 0.024 92;
+
+    /* Warm chocolate card surfaces lifted off the black field */
+    --card: 0.165 0.022 66;
+    --card-foreground: 0.955 0.024 92;
+
+    --popover: 0.145 0.02 66;
+    --popover-foreground: 0.955 0.024 92;
+
+    /* Saturated amber-gold (logo honeycomb #F5A623 → #FFCC66) */
+    --primary: 0.79 0.175 76;
+    --primary-foreground: 0.155 0.03 64;
+
+    --secondary: 0.225 0.032 68;
+    --secondary-foreground: 0.9 0.028 88;
+
+    --muted: 0.205 0.024 68;
+    --muted-foreground: 0.7 0.045 84;
+
+    /* Bright metallic gold bevel highlight (logo's gold rim light) */
+    --accent: 0.865 0.155 94;
+    --accent-foreground: 0.155 0.03 64;
+
+    --destructive: 0.585 0.19 30;
+    --destructive-foreground: 0.97 0.02 88;
+
+    /* Warm leaf green (logo's flower leaves, #4C8A2E) */
+    --success: 0.63 0.14 140;
+    --success-foreground: 0.155 0.03 138;
+
+    --warning: 0.815 0.16 86;
+    --warning-foreground: 0.155 0.03 64;
+
+    --border: 0.32 0.05 78;
+    --input: 0.29 0.038 70;
+    --ring: 0.865 0.155 94;
+
+    --chart-1: 0.79 0.175 76;
+    --chart-2: 0.865 0.155 94;
+    --chart-3: 0.63 0.14 140;
+    --chart-4: 0.52 0.13 42;
+    --chart-5: 0.7 0.045 84;
+
+    --sidebar: 0.145 0.02 66;
+    --sidebar-foreground: 0.955 0.024 92;
+    --sidebar-primary: 0.79 0.175 76;
+    --sidebar-primary-foreground: 0.155 0.03 64;
+    --sidebar-accent: 0.225 0.032 68;
+    --sidebar-accent-foreground: 0.9 0.028 88;
+    --sidebar-border: 0.32 0.05 78;
+    --sidebar-ring: 0.865 0.155 94;
+
+    /* ---- Logo-matched honeycomb + honey background system ---- */
+    /* Glossy honeycomb cell: top-left specular, amber mid, gold bevel */
+    --gradient-comb-cell: linear-gradient(
+      160deg,
+      oklch(0.92 0.14 98) 0%,
+      oklch(0.83 0.185 84) 38%,
+      oklch(0.66 0.16 66) 100%
+    );
+    /* Beveled gold hex frame around each cell */
+    --gradient-comb-frame: linear-gradient(
+      150deg,
+      oklch(0.93 0.14 98) 0%,
+      oklch(0.76 0.17 76) 45%,
+      oklch(0.52 0.13 58) 100%
+    );
+    /* Viscous honey drip running along section edges */
+    --gradient-honey-drip: linear-gradient(
+      180deg,
+      oklch(0.9 0.16 92) 0%,
+      oklch(0.79 0.185 78) 55%,
+      oklch(0.6 0.15 60) 100%
+    );
+    --gradient-honey: linear-gradient(
+      180deg,
+      oklch(0.96 0.13 98) 0%,
+      oklch(0.85 0.18 84) 42%,
+      oklch(0.73 0.17 66) 100%
+    );
+    --gradient-honey-soft: linear-gradient(
+      145deg,
+      oklch(0.3 0.05 72) 0%,
+      oklch(0.19 0.03 66) 100%
+    );
+    --gradient-badge: radial-gradient(
+      120% 120% at 30% 12%,
+      oklch(0.3 0.075 74) 0%,
+      oklch(0.16 0.03 68) 55%,
+      oklch(0.1 0.012 66) 100%
+    );
+    --gradient-text-gold: linear-gradient(
+      180deg,
+      oklch(0.96 0.12 98) 0%,
+      oklch(0.84 0.185 82) 55%,
+      oklch(0.71 0.17 64) 100%
+    );
+
+    --shadow-honey: 0 10px 30px -10px oklch(0.74 0.18 76 / 0.5);
+    --shadow-comb: 0 1px 0 oklch(0.98 0.06 96 / 0.5), 0 2px 6px -2px
+      oklch(0.05 0.01 64 / 0.85);
+    --glow-honey: 0 0 0 1px oklch(0.74 0.18 76 / 0.38), 0 0 30px -6px
+      oklch(0.8 0.17 82 / 0.45);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* ---- Realistic honeycomb tile (data-URI SVG, logo-matched) ---- */
+    /* Beveled gold-rimmed hexagon: dark cell well + amber gloss + gold rim.
+       Used at low opacity as the app-wide fixed background so text stays
+       high-contrast. Tile is 104x180 to match the 60px hex pitch. */
+    --comb-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='104' height='180' viewBox='0 0 104 180'%3E%3Cdefs%3E%3ClinearGradient id='c' x1='0' y1='0' x2='0.55' y2='1'%3E%3Cstop offset='0' stop-color='%23ffd98a' stop-opacity='0.30'/%3E%3Cstop offset='0.42' stop-color='%23f5a623' stop-opacity='0.16'/%3E%3Cstop offset='1' stop-color='%238a4a12' stop-opacity='0.05'/%3E%3C/linearGradient%3E%3ClinearGradient id='r' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffe9b0' stop-opacity='0.55'/%3E%3Cstop offset='0.5' stop-color='%23e0a52b' stop-opacity='0.34'/%3E%3Cstop offset='1' stop-color='%237a4310' stop-opacity='0.22'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='none' stroke='url(%23r)' stroke-width='2.4' stroke-linejoin='round'%3E%3Cpath d='M26 4 L78 4 L104 49 L78 94 L26 94 L0 49 Z'/%3E%3Cpath d='M26 94 L78 94 L104 139 L78 184 L26 184 L0 139 Z'/%3E%3Cpath d='M-26 49 L26 49 L52 94 L26 139 L-26 139 L-52 94 Z'/%3E%3Cpath d='M78 49 L130 49 L156 94 L130 139 L78 139 L52 94 Z'/%3E%3C/g%3E%3Cg fill='url(%23c)'%3E%3Cpath d='M26 4 L78 4 L104 49 L78 94 L26 94 L0 49 Z'/%3E%3Cpath d='M26 94 L78 94 L104 139 L78 184 L26 184 L0 139 Z'/%3E%3Cpath d='M-26 49 L26 49 L52 94 L26 139 L-26 139 L-52 94 Z'/%3E%3Cpath d='M78 49 L130 49 L156 94 L130 139 L78 139 L52 94 Z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* App-wide black text outline.                                        */
+  /* Every word and letter renders with a black stroke. `paint-order:     */
+  /* stroke fill` draws the stroke BEHIND the glyph fill, so the fill     */
+  /* stays crisp and unobscured on both light honey and dark chocolate    */
+  /* surfaces. The stroke is thin enough to read as an outline, not a     */
+  /* solid black blob, and scales with the font size.                     */
+  /* ------------------------------------------------------------------ */
+  body,
+  body * {
+    -webkit-text-stroke: 0.6px oklch(0.05 0.01 64);
+    paint-order: stroke fill;
+  }
+
+  /* Headings carry more visual weight, so they take a slightly heavier    */
+  /* outline to stay crisp against the glossy honey gradients.             */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    -webkit-text-stroke-width: 0.9px;
+  }
+
+  /* App-wide honeycomb + honey background, fixed behind every page.
+     This is the body-level half of the background contract; AppLayout's
+     fixed .honeycomb-bg layer is the other half. Keep the two in sync. */
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    background-color: oklch(var(--background));
+    /* Layer order (top → bottom): warm gold bloom, glossy drips from the
+       top edge, honey pooling along the bottom edge, then the realistic
+       beveled gold-rimmed honeycomb tile. Cell fills stay low-opacity so
+       cream text and chocolate cards keep AA+ contrast. */
+    background-image: radial-gradient(
+        120% 55% at 50% 8%,
+        oklch(0.62 0.13 74 / 0.18) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        140% 42% at 50% -12%,
+        oklch(0.8 0.185 78 / 0.26) 0%,
+        transparent 62%
+      ),
+      radial-gradient(
+        120% 40% at 50% 112%,
+        oklch(0.72 0.17 70 / 0.24) 0%,
+        transparent 60%
+      ), /* glossy honey drips running down from the top edge */
+      linear-gradient(
+        180deg,
+        oklch(0.86 0.17 84 / 0.22) 0%,
+        oklch(0.78 0.18 76 / 0.1) 5%,
+        transparent 13%
+      ), /* honey pooled along the bottom edge */
+      linear-gradient(
+        0deg,
+        oklch(0.85 0.17 82 / 0.24) 0%,
+        oklch(0.76 0.18 74 / 0.1) 6%,
+        transparent 14%
+      ), var(--comb-tile);
+    background-size: auto, auto, auto, 100% 100%, 100% 100%, 104px 180px;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
+      repeat;
+    background-attachment: fixed;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+}
+
+@layer utilities {
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+
+  /* Explicit black text outline utility. Mirrors the app-wide base rule so
+     any surface can re-assert the outline (e.g. after a reset) and so the
+     treatment is greppable/testable. `paint-order: stroke fill` keeps the
+     glyph fill on top of the stroke for legibility on every background. */
+  .text-outline-black {
+    -webkit-text-stroke: 0.6px oklch(0.05 0.01 64);
+    paint-order: stroke fill;
+  }
+
+  /* Heavier outline for display headings and large numerals. */
+  .text-outline-black-strong {
+    -webkit-text-stroke: 0.9px oklch(0.05 0.01 64);
+    paint-order: stroke fill;
+  }
+
+  /* Glossy honey gradient surface for primary actions */
+  .honey-surface {
+    background-image: var(--gradient-honey);
+    box-shadow: inset 0 1px 0 oklch(0.99 0.05 96 / 0.88), inset 0 -2px 6px
+      oklch(0.5 0.15 60 / 0.58), var(--shadow-honey);
+  }
+
+  /* Warm dark card surface with a faint honeycomb-lit sheen */
+  .honey-card-surface {
+    background-image: var(--gradient-honey-soft);
+    box-shadow: inset 0 1px 0 oklch(0.9 0.08 90 / 0.16), 0 12px 28px -16px
+      oklch(0.05 0.01 60 / 0.9);
+  }
+
+  .honey-badge-surface {
+    background-image: var(--gradient-badge);
+  }
+
+  /* Metallic gold text treatment */
+  .text-gold-gradient {
+    background-image: var(--gradient-text-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* ---- Logo-matched honeycomb & honey background utilities ---- */
+
+  /* Beveled gold-framed honeycomb cell, close-packed offset rows.
+     This is the app-wide background contract used by AppLayout's fixed
+     layer — keep these class names and their coverage stable, and keep
+     the cell geometry in sync with the body background above. */
+  .honeycomb-bg {
+    background-color: oklch(var(--background));
+    /* Must mirror the body background above — same layers, same order,
+       same tile geometry — so the fixed layer and the body never drift. */
+    background-image: radial-gradient(
+        120% 55% at 50% 6%,
+        oklch(0.62 0.13 74 / 0.16) 0%,
+        transparent 60%
+      ),
+      radial-gradient(
+        140% 42% at 50% -12%,
+        oklch(0.8 0.185 78 / 0.22) 0%,
+        transparent 62%
+      ),
+      radial-gradient(
+        120% 40% at 50% 112%,
+        oklch(0.72 0.17 70 / 0.2) 0%,
+        transparent 60%
+      ),
+      linear-gradient(
+        180deg,
+        oklch(0.86 0.17 84 / 0.2) 0%,
+        oklch(0.78 0.18 76 / 0.09) 5%,
+        transparent 13%
+      ),
+      linear-gradient(
+        0deg,
+        oklch(0.85 0.17 82 / 0.22) 0%,
+        oklch(0.76 0.18 74 / 0.09) 6%,
+        transparent 14%
+      ), var(--comb-tile);
+    background-size: auto, auto, auto, 100% 100%, 100% 100%, 104px 180px;
+    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
+      repeat;
+    background-attachment: fixed;
+  }
+
+  /* Warm gold center glow echoing the logo badge's lit core */
+  .honey-glow-field {
+    background-image: radial-gradient(
+      110% 50% at 50% 0%,
+      oklch(0.72 0.16 76 / 0.18) 0%,
+      transparent 62%
+    );
+  }
+
+  /* Subtle beveled gold-framed honeycomb texture for card, tile, hero,
+     package, and footer surfaces. Low-opacity so text stays legible. */
+  .honeycomb-texture {
+    background-image: var(--comb-tile);
+    background-size: 52px 90px;
+    background-repeat: repeat;
+    opacity: 1;
+  }
+
+  /* A single glossy amber honeycomb cell (hexagon-clipped by caller) */
+  .honeycomb-cell {
+    background-image: var(--gradient-comb-cell);
+    box-shadow: inset 0 1px 0 oklch(0.99 0.06 96 / 0.65), inset 0 -2px 5px
+      oklch(0.46 0.13 58 / 0.6);
+  }
+
+  /* Beveled gold hexagon frame */
+  .honeycomb-frame {
+    background-image: var(--gradient-comb-frame);
+    box-shadow: var(--shadow-comb);
+  }
+
+  /* Viscous honey drip edge — glossy honey pooling along a surface edge.
+     A soft radial sheen adds a wet highlight; the strip stays fully opaque
+     so it never disappears or clips on browsers without mask-composite. */
+  .honey-drip {
+    background-image: var(--gradient-honey-drip),
+      radial-gradient(
+        140% 90% at 50% -20%,
+        oklch(0.99 0.08 96 / 0.55) 0%,
+        transparent 62%
+      );
+    box-shadow: inset 0 1px 0 oklch(0.99 0.06 96 / 0.72), 0 6px 14px -6px
+      oklch(0.5 0.15 60 / 0.62);
+  }
+
+  /* Thin glossy honey strand — a taut drip of honey, rounded at the tip */
+  .honey-strand {
+    background-image: linear-gradient(
+      180deg,
+      oklch(0.92 0.15 94) 0%,
+      oklch(0.74 0.18 74) 100%
+    );
+    box-shadow: inset 0 1px 0 oklch(0.99 0.06 96 / 0.8), inset 1px 0 0
+      oklch(0.99 0.06 96 / 0.4);
+    border-radius: 9999px;
+    transform-origin: top center;
+  }
+
+  /* Hexagon clip shapes */
+  .hex-clip {
+    clip-path: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+  }
+  .hex-clip-flat {
+    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  }
+
+  .glow-honey {
+    box-shadow: var(--glow-honey);
+  }
+
+  /* Honey-drip bottom edge used on hero badge + success states.
+     Rounded lobes plus a soft honey glow so the edge reads as liquid. */
+  .honey-drip-edge {
+    -webkit-mask-image: radial-gradient(
+        circle at 50% 0,
+        #000 0 62%,
+        transparent 63%
+      ), radial-gradient(circle at 22% 0, #000 0 48%, transparent 50%),
+      radial-gradient(circle at 78% 0, #000 0 48%, transparent 50%);
+    mask-image: radial-gradient(circle at 50% 0, #000 0 62%, transparent 63%),
+      radial-gradient(circle at 22% 0, #000 0 48%, transparent 50%),
+      radial-gradient(circle at 78% 0, #000 0 48%, transparent 50%);
+    filter: drop-shadow(0 4px 10px oklch(0.6 0.16 66 / 0.5));
+  }
+
+  .scrollbar-honey::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scrollbar-honey::-webkit-scrollbar-thumb {
+    background: oklch(0.74 0.18 76 / 0.42);
+    border-radius: 9999px;
+  }
+}

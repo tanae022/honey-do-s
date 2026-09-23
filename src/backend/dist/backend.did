@@ -1,0 +1,349 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type VisitRecord = 
+ record {
+   beeId: opt BeeId;
+   beeName: opt text;
+   completedAt: Timestamp;
+   jobId: JobId;
+   referenceCode: ReferenceCode;
+   "service": ServiceCategory;
+ };
+type Value = 
+ variant {
+   "bool": bool;
+   float: float64;
+   "int": int;
+   "nat": nat;
+   "null";
+   "text": text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec HttpHeader;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: HttpRequestResult;
+ };
+type Timestamp = int;
+type StripeSessionStatus = 
+ variant {
+   completed: record {
+                response: text;
+                userPrincipal: opt text;
+              };
+   failed: record {error: text;};
+ };
+type StripeConfiguration = 
+ record {
+   allowedCountries: vec text;
+   secretKey: text;
+ };
+type ShoppingItem = 
+ record {
+   currency: text;
+   priceInCents: nat;
+   productDescription: text;
+   productName: text;
+   quantity: nat;
+ };
+type ServiceCategory = 
+ variant {
+   cleanOrganize;
+   errands;
+   fixIt;
+   house;
+   moveLift;
+   mowing;
+   showMe;
+   yardPlants;
+ };
+type Review = 
+ record {
+   comment: text;
+   createdAt: Timestamp;
+   rating: nat;
+ };
+type Result__1 = 
+ record {
+   hasMore: bool;
+   rows: vec vec Cell;
+ };
+type Result_4 = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Result_3 = 
+ variant {
+   err: JobError;
+   ok: text;
+ };
+type Result_2 = 
+ variant {
+   err: BeeError;
+   ok: JobRequestView;
+ };
+type Result_1 = 
+ variant {
+   err: JobError;
+   ok: JobRequestView;
+ };
+type Result = 
+ variant {
+   err: BeeError;
+   ok: BeeView;
+ };
+type ReferenceCode = text;
+type Quote = 
+ record {
+   amount: nat;
+   discountAmount: nat;
+   discountApplied: bool;
+   note: text;
+   sentAt: Timestamp;
+ };
+type PhotoId = text;
+type PaymentMethod = 
+ variant {
+   cashApp;
+   stripe;
+ };
+type PackageEnrollment = 
+ record {
+   active: bool;
+   includedVisits: nat;
+   monthlyPrice: nat;
+   startedAt: Timestamp;
+ };
+type JobStatus = 
+ variant {
+   completed;
+   inProgress;
+   quoted;
+   requested;
+   scheduled;
+ };
+type JobRequestView = 
+ record {
+   appointment: opt Appointment;
+   assignedBeeId: opt BeeId;
+   assignedBeeName: opt text;
+   category: ServiceCategory;
+   completedAt: opt Timestamp;
+   createdAt: Timestamp;
+   customerName: text;
+   deposit: opt Deposit;
+   description: text;
+   email: text;
+   id: JobId;
+   ownParts: bool;
+   packageEnrollment: opt PackageEnrollment;
+   phone: text;
+   photoIds: vec PhotoId;
+   preferredTiming: text;
+   quote: opt Quote;
+   referenceCode: ReferenceCode;
+   review: opt Review;
+   status: JobStatus;
+ };
+type JobRequestInput = 
+ record {
+   category: ServiceCategory;
+   customerName: text;
+   description: text;
+   email: text;
+   ownParts: bool;
+   packageInterest: bool;
+   phone: text;
+   photoIds: vec PhotoId;
+   preferredTiming: text;
+ };
+type JobId = nat;
+type JobError = 
+ variant {
+   invalidState: text;
+   notAuthorized;
+   notFound;
+   paymentError: text;
+ };
+type HttpRequestResult = 
+ record {
+   body: blob;
+   headers: vec HttpHeader;
+   status: nat;
+ };
+type HttpHeader = 
+ record {
+   name: text;
+   value: text;
+ };
+type Error = 
+ variant {
+   AmbiguousAttribute: record {
+                         field: text;
+                         sources: vec text;
+                       };
+   FrontendOriginMismatch: record {
+                             expected: vec text;
+                             got: text;
+                           };
+   FrontendOriginsNotConfigured;
+   MalformedCandid;
+   MissingField: text;
+   MixedSsoSources: record {
+                      otherKeys: vec text;
+                      ssoKeys: vec text;
+                    };
+   NoAttributes;
+   Stale: record {ageNs: nat;};
+   UnknownNonce;
+   UntrustedSsoSource: record {domain: text;};
+ };
+type Deposit = 
+ record {
+   amount: nat;
+   method: PaymentMethod;
+   paid: bool;
+   paidAt: opt Timestamp;
+   stripeSessionId: opt text;
+ };
+type DashboardStats = 
+ record {
+   activeJobs: nat;
+   depositsCollected: nat;
+   newRequests: nat;
+   reviewsCount: nat;
+   upcomingAppointments: nat;
+ };
+type Cell = 
+ record {
+   name: text;
+   value: Value;
+ };
+type BeeView = 
+ record {
+   createdAt: Timestamp;
+   id: BeeId;
+   name: text;
+   specialty: text;
+ };
+type BeeInput = 
+ record {
+   name: text;
+   specialty: text;
+ };
+type BeeId = nat;
+type BeeError = 
+ variant {
+   invalidState: text;
+   notAuthorized;
+   notFound;
+ };
+type Appointment = 
+ record {
+   confirmed: bool;
+   scheduledAt: Timestamp;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initialize_access_control: () -> ();
+  _internet_identity_sign_in_finish: () -> (Result_4);
+  _internet_identity_sign_in_start: () -> (blob);
+  /// Guest: accept the quote attached to a job request.
+  acceptQuote: (referenceCode: ReferenceCode) -> (Result_1);
+  /// Admin: advance a job request to its next lifecycle status.
+  advanceStatus: (id: JobId) -> (Result_1);
+  /// Admin: assign a bee to a job request.
+  assignBeeToJob: (id: JobId, beeId: BeeId) -> (Result_2);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  /// Guest: confirm the scheduled appointment.
+  confirmAppointment: (referenceCode: ReferenceCode) -> (Result_1);
+  /// Guest: confirm a Stripe deposit payment and mark the deposit paid.
+  confirmDepositPayment: (referenceCode: ReferenceCode) -> (Result_1);
+  /// Admin: create a bee (employee) with a name and specialty.
+  createBee: (input: BeeInput) -> (Result);
+  /// Guest: create a Stripe checkout session for a set of shopping items.
+  createCheckoutSession: (items: vec ShoppingItem, successUrl: text,
+   cancelUrl: text) -> (text);
+  /// Guest: create a Stripe checkout session for the 50% deposit on an accepted quote.
+  createDepositCheckoutSession: (referenceCode: ReferenceCode, successUrl:
+   text, cancelUrl: text) -> (Result_3);
+  execute: (qJson: text) -> (Result__1) query;
+  /// Return the backend's behavioral API documentation as Markdown.
+  getApiDoc: () -> (text) query;
+  getCallerUserRole: () -> (UserRole) query;
+  /// Admin: read the newest-first visit history for a job request's customer.
+  getCustomerVisitHistory: (id: JobId) -> (vec VisitRecord) query;
+  /// Admin: read dashboard statistics.
+  getDashboardStats: () -> (DashboardStats) query;
+  /// Admin: fetch a single job request by id.
+  getRequest: (id: JobId) -> (opt JobRequestView) query;
+  /// Guest: fetch a job request by its public reference code.
+  getRequestByReference: (referenceCode: ReferenceCode) ->
+   (opt JobRequestView) query;
+  /// Guest: read the status of a Stripe checkout session.
+  getStripeSessionStatus: (sessionId: text) -> (StripeSessionStatus);
+  /// Guest: read the newest-first visit history for a reference code.
+  getVisitHistory: (referenceCode: ReferenceCode) -> (vec VisitRecord) query;
+  isCallerAdmin: () -> (bool) query;
+  /// Whether Stripe checkout is configured for deposit payments.
+  isStripeConfigured: () -> (bool) query;
+  /// Admin: list all bees.
+  listBees: () -> (vec BeeView) query;
+  /// Admin: list all job requests.
+  listRequests: () -> (vec JobRequestView) query;
+  /// Guest: record a deposit payment for an accepted quote.
+  recordDeposit: (referenceCode: ReferenceCode, method: PaymentMethod) ->
+   (Result_1);
+  /// Admin: schedule an appointment for a job request. Notifies BOTH the
+  /// customer and the owner.
+  scheduleAppointment: (id: JobId, scheduledAt: Timestamp) -> (Result_1);
+  schema: () -> (text) query;
+  /// Admin: mark a job request's customer as being on the monthly package.
+  setPackageEnrollment: (id: JobId, active: bool) -> (Result_2);
+  /// Admin: set the quote amount and note for a job request. When the customer
+  /// indicated they supply their own parts, a 10% discount is applied and
+  /// recorded on the quote.
+  setQuote: (id: JobId, amount: nat, note: text) -> (Result_1);
+  /// Admin: store the Stripe secret key and allowed countries.
+  setStripeConfiguration: (config: StripeConfiguration) -> ();
+  /// Guest: submit a new job request and receive its public reference code.
+  submitRequest: (input: JobRequestInput) -> (ReferenceCode);
+  /// Guest: submit a review for a completed job.
+  submitReview: (referenceCode: ReferenceCode, rating: nat, comment: 
+   text) -> (Result_1);
+  /// HTTP outcall transform required by the Stripe client.
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  /// Admin: update a bee's name and specialty.
+  updateBee: (id: BeeId, input: BeeInput) -> (Result);
+}
