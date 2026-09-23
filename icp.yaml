@@ -1,0 +1,4 @@
+canisters:
+  backend:
+    type: motoko
+    main: src/backend/main.mo
