@@ -10,6 +10,13 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface AdminSettings {
+  'appointmentReminders' : boolean,
+  'notificationSound' : boolean,
+  'messageAlerts' : boolean,
+  'pushNotifications' : boolean,
+  'customerRequestAlerts' : boolean,
+}
 export interface Appointment {
   'confirmed' : boolean,
   'scheduledAt' : Timestamp,
@@ -25,7 +32,69 @@ export interface BeeView {
   'createdAt' : Timestamp,
   'specialty' : string,
 }
+export interface BusinessSettings {
+  'businessName' : string,
+  'businessEmail' : string,
+  'businessAddress' : string,
+  'businessPhone' : string,
+}
 export interface Cell { 'value' : Value, 'name' : string }
+export type ChannelResult = { 'sent' : null } |
+  { 'failed' : string };
+export type CustomerError = { 'notAuthorized' : null } |
+  { 'invalidInput' : string } |
+  { 'notFound' : null };
+export type CustomerId = bigint;
+export interface CustomerInput {
+  'serviceAddress' : string,
+  'fullName' : string,
+  'email' : string,
+  'preferredContact' : PreferredContact,
+  'phone' : string,
+}
+export interface CustomerNote {
+  'id' : bigint,
+  'body' : string,
+  'createdAt' : Timestamp,
+}
+export interface CustomerProfileView {
+  'completedJobs' : Array<JobRequestView>,
+  'payments' : Array<PaymentHistory>,
+  'customer' : CustomerView,
+  'messages' : Array<MessageView__1>,
+  'jobs' : Array<JobRequestView>,
+  'photoIds' : Array<PhotoId>,
+  'appointments' : Array<Appointment>,
+  'cancelledJobs' : Array<JobRequestView>,
+  'deposits' : Array<Deposit>,
+  'pendingJobs' : Array<JobRequestView>,
+  'quotes' : Array<Quote>,
+  'jobRecords' : Array<JobRecordView>,
+}
+export type CustomerStatus = { 'active' : null } |
+  { 'inactive' : null } |
+  { 'archived' : null };
+export interface CustomerSummary {
+  'id' : CustomerId,
+  'status' : CustomerStatus,
+  'serviceAddress' : string,
+  'fullName' : string,
+  'email' : string,
+  'phone' : string,
+  'jobCount' : bigint,
+}
+export interface CustomerView {
+  'id' : CustomerId,
+  'status' : CustomerStatus,
+  'serviceAddress' : string,
+  'createdAt' : Timestamp,
+  'fullName' : string,
+  'email' : string,
+  'preferredContact' : PreferredContact,
+  'notes' : Array<CustomerNote>,
+  'phone' : string,
+  'adminNotes' : string,
+}
 export interface DashboardStats {
   'reviewsCount' : bigint,
   'depositsCollected' : bigint,
@@ -34,11 +103,55 @@ export interface DashboardStats {
   'activeJobs' : bigint,
 }
 export interface Deposit {
+  'status' : DepositStatus,
   'method' : PaymentMethod,
   'paid' : boolean,
+  'submittedAt' : [] | [Timestamp],
   'stripeSessionId' : [] | [string],
   'amount' : bigint,
+  'verifiedAt' : [] | [Timestamp],
   'paidAt' : [] | [Timestamp],
+}
+export interface DepositSetting { 'percent' : bigint }
+export type DepositStatus = { 'verified' : null } |
+  { 'submitted' : null } |
+  { 'pending' : null } |
+  { 'rejected' : null };
+export interface DiscountApplication {
+  'ruleName' : string,
+  'ruleId' : [] | [DiscountId],
+  'applied' : boolean,
+  'reason' : string,
+}
+export type DiscountEligibility = { 'all' : null } |
+  { 'returningCustomer' : null } |
+  { 'ownParts' : null };
+export type DiscountId = bigint;
+export type DiscountKind = { 'fixed' : null } |
+  { 'percentage' : null };
+export interface DiscountRule {
+  'id' : DiscountId,
+  'active' : boolean,
+  'minPurchase' : bigint,
+  'maxDiscount' : bigint,
+  'value' : bigint,
+  'startAt' : [] | [Timestamp],
+  'kind' : DiscountKind,
+  'name' : string,
+  'createdAt' : Timestamp,
+  'endAt' : [] | [Timestamp],
+  'eligibility' : DiscountEligibility,
+}
+export interface DiscountRuleInput {
+  'active' : boolean,
+  'minPurchase' : bigint,
+  'maxDiscount' : bigint,
+  'value' : bigint,
+  'startAt' : [] | [Timestamp],
+  'kind' : DiscountKind,
+  'name' : string,
+  'endAt' : [] | [Timestamp],
+  'eligibility' : DiscountEligibility,
 }
 export type Error = { 'FrontendOriginsNotConfigured' : null } |
   {
@@ -55,6 +168,7 @@ export type Error = { 'FrontendOriginsNotConfigured' : null } |
   { 'UntrustedSsoSource' : { 'domain' : string } } |
   { 'MissingField' : string } |
   { 'FrontendOriginMismatch' : { 'got' : string, 'expected' : Array<string> } };
+export type FrontendOriginError = { 'invalidOrigin' : string };
 export interface HttpHeader { 'value' : string, 'name' : string }
 export interface HttpRequestResult {
   'status' : bigint,
@@ -66,6 +180,28 @@ export type JobError = { 'paymentError' : string } |
   { 'notAuthorized' : null } |
   { 'notFound' : null };
 export type JobId = bigint;
+export type JobRecordId = bigint;
+export type JobRecordStatus = { 'scheduled' : null } |
+  { 'cancelled' : null } |
+  { 'completed' : null } |
+  { 'inProgress' : null };
+export interface JobRecordView {
+  'id' : JobRecordId,
+  'customerName' : string,
+  'status' : JobRecordStatus,
+  'completedAt' : [] | [Timestamp],
+  'serviceAddress' : string,
+  'createdAt' : Timestamp,
+  'quote' : [] | [Quote],
+  'deposit' : [] | [Deposit],
+  'jobRequestId' : JobId,
+  'pricing' : [] | [QuotePricing],
+  'referenceCode' : ReferenceCode,
+  'remainingBalance' : bigint,
+  'category' : ServiceCategory,
+  'customerId' : CustomerId,
+  'scheduledAt' : Timestamp,
+}
 export interface JobRequestInput {
   'customerName' : string,
   'preferredTiming' : string,
@@ -101,36 +237,243 @@ export interface JobRequestView {
 }
 export type JobStatus = { 'scheduled' : null } |
   { 'requested' : null } |
+  { 'cancelled' : null } |
   { 'completed' : null } |
   { 'quoted' : null } |
   { 'inProgress' : null };
+export type MessageError = { 'notAuthorized' : null } |
+  { 'invalidInput' : string } |
+  { 'notFound' : null };
+export type MessageId = bigint;
+export interface MessageView {
+  'id' : MessageId,
+  'body' : string,
+  'createdAt' : Timestamp,
+  'jobId' : [] | [JobId],
+  'customerId' : CustomerId,
+  'fromAdmin' : boolean,
+}
+export interface MessageView__1 {
+  'id' : bigint,
+  'body' : string,
+  'createdAt' : Timestamp,
+  'jobId' : [] | [JobId],
+  'customerId' : CustomerId,
+  'fromAdmin' : boolean,
+}
+export type NotificationError = { 'notAuthorized' : null } |
+  { 'notFound' : null };
+export type NotificationId = bigint;
+export type NotificationKind = { 'appointmentReminder' : null } |
+  { 'depositReceived' : null } |
+  { 'returningCustomerRequest' : null } |
+  { 'depositVerified' : null } |
+  { 'depositSubmitted' : null } |
+  { 'appointmentConfirmed' : null } |
+  { 'newCustomer' : null } |
+  { 'quoteApproved' : null } |
+  { 'newRequest' : null } |
+  { 'appointmentChanged' : null } |
+  { 'customerMessage' : null } |
+  { 'paymentReceived' : null } |
+  { 'quoteDeclined' : null } |
+  { 'newMessage' : null } |
+  { 'bookingApproval' : null };
+export interface NotificationView {
+  'id' : NotificationId,
+  'title' : string,
+  'relatedCustomerId' : [] | [CustomerId],
+  'body' : string,
+  'kind' : NotificationKind,
+  'createdAt' : Timestamp,
+  'read' : boolean,
+  'relatedJobId' : [] | [JobId],
+}
+export type OwnerAlertError = { 'invalidEmail' : string } |
+  { 'sendFailed' : string };
+export type OwnerAlertPhoneError = { 'invalidPhone' : string } |
+  { 'sendFailed' : string };
 export interface PackageEnrollment {
   'startedAt' : Timestamp,
   'active' : boolean,
   'monthlyPrice' : bigint,
   'includedVisits' : bigint,
 }
+export interface PaymentHistory {
+  'id' : PaymentId,
+  'depositAmount' : bigint,
+  'paymentMethod' : PaymentMethod,
+  'depositStatus' : DepositStatus,
+  'discountAmount' : bigint,
+  'createdAt' : Timestamp,
+  'totalPaid' : bigint,
+  'jobRequestId' : JobId,
+  'finalPayment' : bigint,
+  'referenceCode' : ReferenceCode,
+  'updatedAt' : Timestamp,
+  'finalQuote' : bigint,
+  'remainingBalance' : bigint,
+  'customerId' : CustomerId,
+  'originalQuote' : bigint,
+}
+export type PaymentId = bigint;
 export type PaymentMethod = { 'stripe' : null } |
-  { 'cashApp' : null };
+  { 'venmo' : null } |
+  { 'chime' : null } |
+  { 'cashApp' : null } |
+  { 'payPal' : null };
+export interface PaymentSettings {
+  'chimeHandle' : string,
+  'venmoHandle' : string,
+  'payPalHandle' : string,
+  'cashAppHandle' : string,
+  'acceptedMethods' : Array<PaymentMethod>,
+}
+export interface PaymentSummaryView {
+  'customerName' : string,
+  'depositAmount' : bigint,
+  'chimeHandle' : string,
+  'adjustedSubtotal' : bigint,
+  'venmoHandle' : string,
+  'depositStatus' : DepositStatus,
+  'depositMethod' : [] | [PaymentMethod],
+  'discountAmount' : bigint,
+  'finalTotal' : bigint,
+  'appointmentConfirmed' : boolean,
+  'serviceDescription' : string,
+  'discountReason' : string,
+  'referenceCode' : ReferenceCode,
+  'payPalHandle' : string,
+  'cashAppHandle' : string,
+  'remainingBalance' : bigint,
+  'originalSubtotal' : bigint,
+  'acceptedMethods' : Array<PaymentMethod>,
+  'taxAmount' : bigint,
+  'appointmentAt' : [] | [Timestamp],
+}
 export type PhotoId = string;
+export type PreferredContact = { 'sms' : null } |
+  { 'email' : null } |
+  { 'phone' : null };
 export interface Quote {
+  'status' : QuoteStatus,
+  'lineItems' : Array<QuoteLineItem>,
+  'total' : bigint,
+  'expiresAt' : [] | [Timestamp],
+  'laborCharge' : bigint,
   'discountApplied' : boolean,
   'discountAmount' : bigint,
   'note' : string,
+  'createdAt' : Timestamp,
+  'quoteNumber' : string,
   'sentAt' : Timestamp,
+  'workDescription' : string,
+  'pricing' : [] | [QuotePricing],
+  'remainingBalance' : bigint,
+  'materialsCharge' : bigint,
   'amount' : bigint,
+  'depositRequired' : bigint,
+  'subtotal' : bigint,
+}
+export type QuoteEmailResult = { 'sent' : null } |
+  { 'failed' : string };
+export interface QuoteInput {
+  'lineItems' : Array<QuoteLineItem>,
+  'expiresAt' : [] | [Timestamp],
+  'laborCharge' : bigint,
+  'note' : string,
+  'workDescription' : string,
+  'materialsCharge' : bigint,
+  'depositRequired' : bigint,
+}
+export interface QuoteLineItem {
+  'description' : string,
+  'quantity' : bigint,
+  'unitPrice' : bigint,
+}
+export interface QuotePricing {
+  'depositAmount' : bigint,
+  'adjustedSubtotal' : bigint,
+  'discountAmount' : bigint,
+  'finalTotal' : bigint,
+  'remainingBalance' : bigint,
+  'originalSubtotal' : bigint,
+  'discount' : DiscountApplication,
+  'taxAmount' : bigint,
+}
+export interface QuoteSendResult {
+  'view' : JobRequestView,
+  'email' : QuoteEmailResult,
+}
+export interface QuoteSettings { 'terms' : string, 'validityDays' : bigint }
+export type QuoteStatus = { 'sent' : null } |
+  { 'approved' : null } |
+  { 'declined' : null } |
+  { 'draft' : null };
+export interface QuoteView {
+  'status' : QuoteStatus,
+  'lineItems' : Array<QuoteLineItem>,
+  'total' : bigint,
+  'expiresAt' : [] | [Timestamp],
+  'expired' : boolean,
+  'laborCharge' : bigint,
+  'discountApplied' : boolean,
+  'discountAmount' : bigint,
+  'note' : string,
+  'quoteNumber' : string,
+  'workDescription' : string,
+  'pricing' : [] | [QuotePricing],
+  'referenceCode' : ReferenceCode,
+  'remainingBalance' : bigint,
+  'materialsCharge' : bigint,
+  'depositRequired' : bigint,
+  'subtotal' : bigint,
 }
 export type ReferenceCode = string;
-export type Result = { 'ok' : BeeView } |
-  { 'err' : BeeError };
-export type Result_1 = { 'ok' : JobRequestView } |
+export type Result = { 'ok' : JobRequestView } |
   { 'err' : JobError };
-export type Result_2 = { 'ok' : JobRequestView } |
-  { 'err' : BeeError };
-export type Result_3 = { 'ok' : string } |
+export type Result_1 = { 'ok' : DiscountRule } |
+  { 'err' : SettingsError };
+export type Result_10 = { 'ok' : string } |
+  { 'err' : FrontendOriginError };
+export type Result_11 = { 'ok' : DepositSetting } |
+  { 'err' : SettingsError };
+export type Result_12 = { 'ok' : BusinessSettings } |
+  { 'err' : SettingsError };
+export type Result_13 = { 'ok' : AdminSettings } |
+  { 'err' : SettingsError };
+export type Result_14 = { 'ok' : QuoteSendResult } |
   { 'err' : JobError };
-export type Result_4 = { 'ok' : null } |
+export type Result_15 = { 'ok' : PaymentHistory } |
+  { 'err' : JobError };
+export type Result_16 = { 'ok' : MessageView } |
+  { 'err' : MessageError };
+export type Result_17 = { 'ok' : null } |
+  { 'err' : NotificationError };
+export type Result_18 = { 'ok' : null } |
+  { 'err' : SettingsError };
+export type Result_19 = { 'ok' : JobRecordView } |
+  { 'err' : JobError };
+export type Result_2 = { 'ok' : CustomerView } |
+  { 'err' : CustomerError };
+export type Result_20 = { 'ok' : string } |
+  { 'err' : JobError };
+export type Result_21 = { 'ok' : null } |
   { 'err' : Error };
+export type Result_3 = { 'ok' : BeeView } |
+  { 'err' : BeeError };
+export type Result_4 = { 'ok' : TaxSetting } |
+  { 'err' : SettingsError };
+export type Result_5 = { 'ok' : QuoteSettings } |
+  { 'err' : SettingsError };
+export type Result_6 = { 'ok' : PaymentSettings } |
+  { 'err' : SettingsError };
+export type Result_7 = { 'ok' : JobRequestView } |
+  { 'err' : BeeError };
+export type Result_8 = { 'ok' : string } |
+  { 'err' : OwnerAlertPhoneError };
+export type Result_9 = { 'ok' : string } |
+  { 'err' : OwnerAlertError };
 export interface Result__1 { 'hasMore' : boolean, 'rows' : Array<Array<Cell>> }
 export interface Review {
   'createdAt' : Timestamp,
@@ -145,6 +488,17 @@ export type ServiceCategory = { 'fixIt' : null } |
   { 'errands' : null } |
   { 'moveLift' : null } |
   { 'yardPlants' : null };
+export interface SettingsBundle {
+  'tax' : TaxSetting,
+  'admin' : AdminSettings,
+  'quote' : QuoteSettings,
+  'deposit' : DepositSetting,
+  'business' : BusinessSettings,
+  'payment' : PaymentSettings,
+}
+export type SettingsError = { 'notAuthorized' : null } |
+  { 'invalidInput' : string } |
+  { 'notFound' : null };
 export interface ShoppingItem {
   'productName' : string,
   'currency' : string,
@@ -160,6 +514,11 @@ export type StripeSessionStatus = {
     'completed' : { 'userPrincipal' : [] | [string], 'response' : string }
   } |
   { 'failed' : { 'error' : string } };
+export interface TaxSetting { 'enabled' : boolean, 'ratePercent' : bigint }
+export interface TestAlertResult {
+  'sms' : ChannelResult,
+  'email' : ChannelResult,
+}
 export type Timestamp = bigint;
 export interface TransformationInput {
   'context' : Uint8Array,
@@ -169,6 +528,10 @@ export interface TransformationOutput {
   'status' : bigint,
   'body' : Uint8Array,
   'headers' : Array<HttpHeader>,
+}
+export interface TwilioConfigStatus {
+  'configured' : boolean,
+  'fromNumber' : string,
 }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
@@ -218,33 +581,72 @@ export interface _SERVICE {
   >,
   '_immutableObjectStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
   '_initialize_access_control' : ActorMethod<[], undefined>,
-  '_internet_identity_sign_in_finish' : ActorMethod<[], Result_4>,
+  '_internet_identity_sign_in_finish' : ActorMethod<[], Result_21>,
   '_internet_identity_sign_in_start' : ActorMethod<[], Uint8Array>,
   /**
-   * / Guest: accept the quote attached to a job request.
+   * / Guest: accept the quote attached to a job request. Marks the quote
+   * / approved and moves the job to `#scheduled`, keeping the existing
+   * / accept-to-scheduled transition working. An expired quote cannot be
+   * / accepted and returns `#invalidState`.
    */
-  'acceptQuote' : ActorMethod<[ReferenceCode], Result_1>,
+  'acceptQuote' : ActorMethod<[ReferenceCode], Result>,
+  /**
+   * / Admin: append an internal note to a customer profile.
+   */
+  'addCustomerNote' : ActorMethod<[CustomerId, string], Result_2>,
+  /**
+   * / Admin: advance a job to its next lifecycle status.
+   */
+  'advanceJobRecord' : ActorMethod<[JobRecordId], Result_19>,
   /**
    * / Admin: advance a job request to its next lifecycle status.
    */
-  'advanceStatus' : ActorMethod<[JobId], Result_1>,
+  'advanceStatus' : ActorMethod<[JobId], Result>,
+  /**
+   * / Admin: mark a quote as approved by the customer.
+   */
+  'approveQuote' : ActorMethod<[JobId], Result>,
+  /**
+   * / Admin: archive a customer without deleting their record.
+   */
+  'archiveCustomer' : ActorMethod<[CustomerId], Result_2>,
   /**
    * / Admin: assign a bee to a job request.
    */
-  'assignBeeToJob' : ActorMethod<[JobId, BeeId], Result_2>,
+  'assignBeeToJob' : ActorMethod<[JobId, BeeId], Result_7>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  /**
+   * / Admin: cancel a job request. Cancellation is terminal and moves the job
+   * / into the customer profile's cancelled group. A completed job cannot be
+   * / cancelled, and cancelling an already-cancelled job is a no-op.
+   */
+  'cancelJob' : ActorMethod<[JobId], Result>,
+  /**
+   * / Admin: cancel a job. Cancellation is terminal.
+   */
+  'cancelJobRecord' : ActorMethod<[JobRecordId], Result_19>,
+  /**
+   * / Admin: mark a job completed.
+   */
+  'completeJobRecord' : ActorMethod<[JobRecordId], Result_19>,
   /**
    * / Guest: confirm the scheduled appointment.
    */
-  'confirmAppointment' : ActorMethod<[ReferenceCode], Result_1>,
+  'confirmAppointment' : ActorMethod<[ReferenceCode], Result>,
   /**
    * / Guest: confirm a Stripe deposit payment and mark the deposit paid.
    */
-  'confirmDepositPayment' : ActorMethod<[ReferenceCode], Result_1>,
+  'confirmDepositPayment' : ActorMethod<[ReferenceCode], Result>,
+  /**
+   * / Admin: convert an approved quote into a scheduled job at the given time.
+   * / The quote must be approved; the job moves to `#scheduled` with a pending
+   * / appointment.
+   */
+  'convertQuoteToJob' : ActorMethod<[JobId, Timestamp], Result>,
   /**
    * / Admin: create a bee (employee) with a name and specialty.
    */
-  'createBee' : ActorMethod<[BeeInput], Result>,
+  'createBee' : ActorMethod<[BeeInput], Result_3>,
   /**
    * / Guest: create a Stripe checkout session for a set of shopping items.
    */
@@ -253,18 +655,79 @@ export interface _SERVICE {
     string
   >,
   /**
+   * / Admin: create a new customer record.
+   */
+  'createCustomer' : ActorMethod<[CustomerInput], Result_2>,
+  /**
    * / Guest: create a Stripe checkout session for the 50% deposit on an accepted quote.
    */
   'createDepositCheckoutSession' : ActorMethod<
     [ReferenceCode, string, string],
-    Result_3
+    Result_20
   >,
+  /**
+   * / Admin: create a new discount rule. The rule is stored inactive-safe: an
+   * / invalid window (end before start) or a zero-value percentage is rejected.
+   */
+  'createDiscount' : ActorMethod<[DiscountRuleInput], Result_1>,
+  /**
+   * / Admin: create a new service request for an existing customer, reusing the
+   * / customer's stored contact information. The job enters the same
+   * / service/quote/deposit/appointment/status lifecycle as a customer-submitted
+   * / request and is linked to the customer's permanent profile.
+   */
+  'createJobForCustomer' : ActorMethod<[CustomerId, JobRequestInput], Result>,
+  /**
+   * / Admin: create a job from a confirmed request or quote. The job captures the
+   * / customer, service, address, scheduled date/time, quote, pricing, deposit,
+   * / remaining balance and initial status. Creating a job for a request that
+   * / already has one returns the existing job.
+   */
+  'createJobRecord' : ActorMethod<[JobId, Timestamp], Result_19>,
+  /**
+   * / Admin: mark a quote as declined by the customer.
+   */
+  'declineQuote' : ActorMethod<[JobId], Result>,
+  /**
+   * / Guest: decline the quote attached to a job request from the emailed quote
+   * / link. Marks the quote declined, matching the existing decline flow.
+   */
+  'declineQuoteByReference' : ActorMethod<[ReferenceCode], Result>,
+  /**
+   * / Admin: delete a discount rule.
+   */
+  'deleteDiscount' : ActorMethod<[DiscountId], Result_18>,
+  /**
+   * / Admin: create or replace a quote from a full professional quote payload,
+   * / including line items, labor and materials charges and optional expiration.
+   * / The subtotal, applicable discount, tax, final total, 10% deposit and
+   * / remaining balance are computed automatically by the pricing engine.
+   */
+  'editQuote' : ActorMethod<[JobId, QuoteInput], Result>,
   'execute' : ActorMethod<[string], Result__1>,
+  /**
+   * / Admin: export all customer records as CSV text.
+   */
+  'exportCustomersCsv' : ActorMethod<[], string>,
   /**
    * / Return the backend's behavioral API documentation as Markdown.
    */
   'getApiDoc' : ActorMethod<[], string>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
+  /**
+   * / Admin: fetch a single customer record.
+   */
+  'getCustomer' : ActorMethod<[CustomerId], [] | [CustomerView]>,
+  /**
+   * / Customer: read their own thread using their job reference code. Only
+   * / messages belonging to the resolved customer are returned.
+   */
+  'getCustomerMessages' : ActorMethod<[string], Array<MessageView>>,
+  /**
+   * / Admin: fetch a customer's full profile with service history, deposits,
+   * / appointments, notes and uploaded photo ids.
+   */
+  'getCustomerProfile' : ActorMethod<[CustomerId], [] | [CustomerProfileView]>,
   /**
    * / Admin: read the newest-first visit history for a job request's customer.
    */
@@ -274,6 +737,40 @@ export interface _SERVICE {
    */
   'getDashboardStats' : ActorMethod<[], DashboardStats>,
   /**
+   * / Admin: read the configured public frontend origin used to build absolute
+   * / links in customer emails. An empty string means "not configured".
+   */
+  'getFrontendOrigin' : ActorMethod<[], string>,
+  /**
+   * / Admin: read a single job record.
+   */
+  'getJobRecord' : ActorMethod<[JobRecordId], [] | [JobRecordView]>,
+  /**
+   * / Admin: read the current owner alert email address.
+   */
+  'getOwnerAlertEmail' : ActorMethod<[], string>,
+  /**
+   * / Admin: read the current owner alert phone number.
+   */
+  'getOwnerAlertPhone' : ActorMethod<[], string>,
+  /**
+   * / Admin: read the payment history for a job request.
+   */
+  'getPaymentHistoryForJob' : ActorMethod<[JobId], [] | [PaymentHistory]>,
+  /**
+   * / Guest: read the customer-facing payment summary for a reference code. This
+   * / is the payment page: original amount, discount, final quote, 10% deposit
+   * / required, remaining balance, accepted payment methods and the current
+   * / deposit and appointment state.
+   */
+  'getPaymentSummary' : ActorMethod<[ReferenceCode], [] | [PaymentSummaryView]>,
+  /**
+   * / Guest: read the customer-facing quote for a job by its public reference
+   * / code. This is the view the emailed quote link opens; it shows the same
+   * / itemized quote the Track page shows and marks an expired quote as expired.
+   */
+  'getQuoteByReference' : ActorMethod<[ReferenceCode], [] | [QuoteView]>,
+  /**
    * / Admin: fetch a single job request by id.
    */
   'getRequest' : ActorMethod<[JobId], [] | [JobRequestView]>,
@@ -282,9 +779,22 @@ export interface _SERVICE {
    */
   'getRequestByReference' : ActorMethod<[ReferenceCode], [] | [JobRequestView]>,
   /**
+   * / Admin: read the complete settings bundle.
+   */
+  'getSettings' : ActorMethod<[], SettingsBundle>,
+  /**
    * / Guest: read the status of a Stripe checkout session.
    */
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
+  /**
+   * / Admin: read whether the Twilio messaging credential is configured and
+   * / which sending number it uses.
+   */
+  'getTwilioConfigStatus' : ActorMethod<[], TwilioConfigStatus>,
+  /**
+   * / Admin: count the notifications that have not been reviewed yet.
+   */
+  'getUnreadNotificationCount' : ActorMethod<[], bigint>,
   /**
    * / Guest: read the newest-first visit history for a reference code.
    */
@@ -299,33 +809,201 @@ export interface _SERVICE {
    */
   'listBees' : ActorMethod<[], Array<BeeView>>,
   /**
+   * / Admin: list a customer's message thread newest first.
+   */
+  'listCustomerMessages' : ActorMethod<[CustomerId], Array<MessageView>>,
+  /**
+   * / Admin: list customers, optionally including archived records.
+   */
+  'listCustomers' : ActorMethod<[boolean], Array<CustomerSummary>>,
+  /**
+   * / Admin: list every saved discount rule, newest first.
+   */
+  'listDiscounts' : ActorMethod<[], Array<DiscountRule>>,
+  /**
+   * / Admin: list every job created from a confirmed request or quote, newest
+   * / first.
+   */
+  'listJobRecords' : ActorMethod<[], Array<JobRecordView>>,
+  /**
+   * / Admin: list every notification newest first.
+   */
+  'listNotifications' : ActorMethod<[], Array<NotificationView>>,
+  /**
+   * / Admin: list every permanent payment-history entry, newest first.
+   */
+  'listPaymentHistory' : ActorMethod<[], Array<PaymentHistory>>,
+  /**
    * / Admin: list all job requests.
    */
   'listRequests' : ActorMethod<[], Array<JobRequestView>>,
   /**
+   * / Admin: mark every notification read.
+   */
+  'markAllNotificationsRead' : ActorMethod<[], undefined>,
+  /**
+   * / Admin: mark a single notification read.
+   */
+  'markNotificationRead' : ActorMethod<[NotificationId], Result_17>,
+  /**
+   * / Admin: post a reply into a customer's thread.
+   */
+  'postAdminMessage' : ActorMethod<
+    [CustomerId, [] | [JobId], string],
+    Result_16
+  >,
+  /**
+   * / Customer: post a message using their job reference code. The customer is
+   * / resolved from the job, so a caller can only ever write to their own thread.
+   */
+  'postCustomerMessage' : ActorMethod<[string, string], Result_16>,
+  /**
+   * / Raise an admin dashboard notification for one of the tracked triggers.
+   * / The job and deposit flows call this helper directly.
+   */
+  'raiseNotification' : ActorMethod<
+    [NotificationKind, string, string, [] | [JobId], [] | [CustomerId]],
+    NotificationId
+  >,
+  /**
    * / Guest: record a deposit payment for an accepted quote.
    */
-  'recordDeposit' : ActorMethod<[ReferenceCode, PaymentMethod], Result_1>,
+  'recordDeposit' : ActorMethod<[ReferenceCode, PaymentMethod], Result>,
+  /**
+   * / Admin: record the final payment for a job and update its permanent payment
+   * / history. The total paid becomes the verified deposit plus the final
+   * / payment.
+   */
+  'recordFinalPayment' : ActorMethod<[JobId, bigint, PaymentMethod], Result_15>,
+  /**
+   * / Admin: mark a submitted deposit not received. The deposit returns to
+   * / rejected so the customer can resubmit it.
+   */
+  'rejectDeposit' : ActorMethod<[ReferenceCode], Result>,
+  /**
+   * / Resolve an existing customer by normalized email first, then phone, or
+   * / create a new permanent record. Returns the customer id. Used by the job
+   * / flow so a returning customer is matched and reused rather than duplicated.
+   */
+  'resolveOrCreateCustomer' : ActorMethod<
+    [string, string, string, string],
+    CustomerId
+  >,
+  /**
+   * / Admin: restore an archived customer to active.
+   */
+  'restoreCustomer' : ActorMethod<[CustomerId], Result_2>,
   /**
    * / Admin: schedule an appointment for a job request. Notifies BOTH the
    * / customer and the owner.
    */
-  'scheduleAppointment' : ActorMethod<[JobId, Timestamp], Result_1>,
+  'scheduleAppointment' : ActorMethod<[JobId, Timestamp], Result>,
   'schema' : ActorMethod<[], string>,
+  /**
+   * / Admin: search the customer directory by name, phone, email, customer id
+   * / or service address.
+   */
+  'searchCustomers' : ActorMethod<[string], Array<CustomerSummary>>,
+  /**
+   * / Admin: raise an appointment-reminder notification for a scheduled job.
+   * / Respects the appointment-reminders setting.
+   */
+  'sendAppointmentReminder' : ActorMethod<[JobId], Result>,
+  /**
+   * / Admin: mark a quote as sent to the customer and email the itemized quote
+   * / to the customer's address on the request. The email carries the quote
+   * / number, work description, line items, labor, materials, subtotal,
+   * / own-parts discount, total, deposit required, remaining balance, expiration
+   * / date, the owner's note, and absolute accept/decline links that open the
+   * / customer's quote from any email client. The result reports the email
+   * / delivery outcome per channel so the
+   * / owner can be told whether the email was sent; a delivery failure is
+   * / surfaced rather than swallowed. Saving or editing a quote never emails.
+   */
+  'sendQuote' : ActorMethod<[JobId], Result_14>,
+  /**
+   * / Admin: send a sample alert to both the saved email and the saved phone,
+   * / reporting the outcome of each channel separately.
+   */
+  'sendTestAlert' : ActorMethod<[], TestAlertResult>,
+  /**
+   * / Admin: update the notification and workflow toggles.
+   */
+  'setAdminSettings' : ActorMethod<[AdminSettings], Result_13>,
+  /**
+   * / Admin: update the business identity.
+   */
+  'setBusinessSettings' : ActorMethod<[BusinessSettings], Result_12>,
+  /**
+   * / Admin: change a customer's lifecycle status.
+   */
+  'setCustomerStatus' : ActorMethod<[CustomerId, CustomerStatus], Result_2>,
+  /**
+   * / Admin: update the deposit setting. The deposit percentage must be between
+   * / 1 and 100.
+   */
+  'setDepositSetting' : ActorMethod<[DepositSetting], Result_11>,
+  /**
+   * / Admin: turn a discount rule on or off.
+   */
+  'setDiscountActive' : ActorMethod<[DiscountId, boolean], Result_1>,
+  /**
+   * / Admin: validate and persist the public frontend origin used to build
+   * / absolute links in customer emails. The value must be an absolute http(s)
+   * / URL with no trailing slash; an empty string clears it and restores the
+   * / backend's default origin.
+   */
+  'setFrontendOrigin' : ActorMethod<[string], Result_10>,
+  /**
+   * / Admin: validate and persist a new owner alert email address.
+   */
+  'setOwnerAlertEmail' : ActorMethod<[string], Result_9>,
+  /**
+   * / Admin: validate and persist a new owner alert phone number, normalized
+   * / to E.164.
+   */
+  'setOwnerAlertPhone' : ActorMethod<[string], Result_8>,
   /**
    * / Admin: mark a job request's customer as being on the monthly package.
    */
-  'setPackageEnrollment' : ActorMethod<[JobId, boolean], Result_2>,
+  'setPackageEnrollment' : ActorMethod<[JobId, boolean], Result_7>,
   /**
-   * / Admin: set the quote amount and note for a job request. When the customer
-   * / indicated they supply their own parts, a 10% discount is applied and
-   * / recorded on the quote.
+   * / Admin: update the accepted payment methods and the owner's payment handles.
    */
-  'setQuote' : ActorMethod<[JobId, bigint, string], Result_1>,
+  'setPaymentSettings' : ActorMethod<[PaymentSettings], Result_6>,
+  /**
+   * / Admin: set the quote amount and note for a job request. The amount becomes
+   * / a single line item and the automatic pricing breakdown (discount, tax,
+   * / final total, 10% deposit and remaining balance) is computed from the saved
+   * / discount rules and settings.
+   */
+  'setQuote' : ActorMethod<[JobId, bigint, string], Result>,
+  /**
+   * / Admin: update the quote defaults.
+   */
+  'setQuoteSettings' : ActorMethod<[QuoteSettings], Result_5>,
   /**
    * / Admin: store the Stripe secret key and allowed countries.
    */
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
+  /**
+   * / Admin: update the tax setting.
+   */
+  'setTaxSetting' : ActorMethod<[TaxSetting], Result_4>,
+  /**
+   * / Admin: store the Twilio messaging credential. The secret is held by the
+   * / canister only and never returned to the frontend.
+   */
+  'setTwilioCredentials' : ActorMethod<
+    [string, string, string, string],
+    undefined
+  >,
+  /**
+   * / Guest: submit a deposit for a quote with the chosen payment method. The
+   * / deposit becomes submitted and awaits owner verification; it is not paid
+   * / until the owner confirms it.
+   */
+  'submitDeposit' : ActorMethod<[ReferenceCode, PaymentMethod], Result>,
   /**
    * / Guest: submit a new job request and receive its public reference code.
    */
@@ -333,7 +1011,7 @@ export interface _SERVICE {
   /**
    * / Guest: submit a review for a completed job.
    */
-  'submitReview' : ActorMethod<[ReferenceCode, bigint, string], Result_1>,
+  'submitReview' : ActorMethod<[ReferenceCode, bigint, string], Result>,
   /**
    * / HTTP outcall transform required by the Stripe client.
    */
@@ -341,7 +1019,20 @@ export interface _SERVICE {
   /**
    * / Admin: update a bee's name and specialty.
    */
-  'updateBee' : ActorMethod<[BeeId, BeeInput], Result>,
+  'updateBee' : ActorMethod<[BeeId, BeeInput], Result_3>,
+  /**
+   * / Admin: update a customer's contact fields and preferred contact method.
+   */
+  'updateCustomer' : ActorMethod<[CustomerId, CustomerInput], Result_2>,
+  /**
+   * / Admin: update an existing discount rule.
+   */
+  'updateDiscount' : ActorMethod<[DiscountId, DiscountRuleInput], Result_1>,
+  /**
+   * / Admin: confirm a submitted deposit. The deposit becomes paid and verified,
+   * / the request is confirmed and the calendar appointment is booked.
+   */
+  'verifyDeposit' : ActorMethod<[ReferenceCode], Result>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

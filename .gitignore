@@ -6,4 +6,3 @@ dist/
 .pnpm-store/
 .cache/
 .icp/
-.env

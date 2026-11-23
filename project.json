@@ -1,18 +1,21 @@
 {
-  "overview": "A handyman job-request app where customers submit service requests and the owner is notified by email.",
+  "overview": "Honey Do's is a home-service booking and management app with a branded customer site and a professional admin workspace covering requests, quotes, deposits, payments, scheduling and jobs.",
   "features": [
-    "Submit a job request with contact details and photos",
-    "Owner is emailed every new request with customer details and a reference code",
-    "Track a request by reference code",
-    "Admin dashboard with customer contact details",
-    "Owner phone number shown as a tap-to-call link"
+    "Customers request a service and track their job by reference code",
+    "Automatic quote pricing with line items, discounts, tax, 10% deposit and remaining balance",
+    "Customer payment page with deposit submission and payment methods",
+    "Admin payment verification that confirms the booking and books the calendar",
+    "Admin dashboard, requests, calendar, customers, quotes, jobs, payments, messages, notifications and settings",
+    "Permanent customer profiles with full request, quote, job and payment history",
+    "Alerts for new requests, messages, quote approvals, deposits and payments"
   ],
-  "category": "productivity",
+  "category": "service-management",
   "tags": [
-    "handyman",
-    "job-requests",
-    "notifications",
-    "admin-dashboard"
+    "home-services",
+    "crm",
+    "scheduling",
+    "invoicing",
+    "payments"
   ],
-  "last_updated": "2026-09-19T15:41:19.863Z"
+  "last_updated": "2026-11-08T01:09:48.859Z"
 }

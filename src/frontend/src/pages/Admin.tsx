@@ -1,4 +1,5 @@
 import type { BeeView, JobRequestView } from "@/backend";
+import { NotificationBell } from "@/components/NotificationBell";
 import { BeeAccent } from "@/components/honey/BeeAccent";
 import { HexStatus } from "@/components/honey/HexStatus";
 import { HoneyButton } from "@/components/honey/HoneyButton";
@@ -19,9 +20,16 @@ import {
   useIsAdmin,
   useIsStripeConfigured,
   useJobRequests,
+  useOwnerAlertEmail,
+  useOwnerAlertPhone,
   useScheduleAppointment,
+  useSeenRequests,
+  useSendTestAlert,
+  useSetOwnerAlertEmail,
+  useSetOwnerAlertPhone,
   useSetQuote,
   useSetStripeConfiguration,
+  useTwilioConfigStatus,
   useUpdateBee,
 } from "@/hooks/useJobs";
 import {
@@ -29,12 +37,15 @@ import {
   formatDateTime,
   formatMoney,
   formatReference,
+  formatRelativeTime,
   formatVisitDate,
   getStatusMeta,
+  isAwaitingQuote,
   isPackageActive,
   nextStatus,
   packageStartedLabel,
   packageVisitsLabel,
+  partitionRequests,
   sortVisitsNewestFirst,
   visitBeeName,
   visitServiceLabel,
@@ -50,12 +61,18 @@ import {
   CreditCard,
   ImageOff,
   LogIn,
+  Mail,
+  MessageSquare,
   Pencil,
+  Phone,
+  RefreshCw,
+  Send,
   ShieldAlert,
+  Sparkles,
   UserPlus,
   X,
 } from "lucide-react";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 
 export function AdminPage() {
   const { data: isAdmin, isLoading: roleLoading } = useIsAdmin();
@@ -114,15 +131,47 @@ function AdminDashboard() {
   const statsQuery = useDashboardStats();
   const requestsQuery = useJobRequests();
   const beesQuery = useBees();
+  const { seen, markSeen, markManySeen } = useSeenRequests();
 
   const stats = statsQuery.data;
   const requests = requestsQuery.data ?? [];
   const bees = beesQuery.data ?? [];
 
+  const { awaitingQuote, inProgress } = useMemo(
+    () => partitionRequests(requests),
+    [requests],
+  );
+
+  // Stable 1-based position per request in the original list order, so a card's
+  // deterministic marker never shifts when the list is grouped.
+  const indexById = useMemo(() => {
+    const map = new Map<string, number>();
+    requests.forEach((job, position) => {
+      map.set(job.id.toString(), position + 1);
+    });
+    return map;
+  }, [requests]);
+
+  const lastUpdated = requestsQuery.dataUpdatedAt
+    ? new Date(requestsQuery.dataUpdatedAt)
+    : null;
+  const isRefreshing = requestsQuery.isFetching && !requestsQuery.isLoading;
+
+  const renderCard = (job: JobRequestView) => (
+    <AdminJobCard
+      key={job.id.toString()}
+      job={job}
+      index={indexById.get(job.id.toString()) ?? 1}
+      bees={bees}
+      isNew={isAwaitingQuote(job) && !seen.has(job.id.toString())}
+      onOpen={() => markSeen(job.id)}
+    />
+  );
+
   return (
     <div className="animate-page-enter px-5 py-10 sm:px-8 md:py-14">
       <div className="mx-auto w-full max-w-5xl">
-        <header className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <span className="text-xs font-semibold uppercase tracking-[0.28em] text-primary">
               Hive control
@@ -131,7 +180,41 @@ function AdminDashboard() {
               Dashboard
             </h1>
           </div>
-          <BeeAccent motion="drift" className="h-8 w-11" />
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <p
+                data-ocid="admin.last_updated"
+                className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"
+              >
+                {lastUpdated
+                  ? `Updated ${formatRelativeTime(lastUpdated)}`
+                  : "Not updated yet"}
+              </p>
+              <p className="mt-0.5 text-[0.65rem] text-muted-foreground">
+                Refreshes automatically every 15s
+              </p>
+            </div>
+            <NotificationBell />
+            <HoneyButton
+              variant="secondary"
+              size="sm"
+              data-ocid="admin.refresh_button"
+              disabled={requestsQuery.isFetching}
+              onClick={() => {
+                void requestsQuery.refetch();
+                void statsQuery.refetch();
+              }}
+              aria-label="Refresh requests now"
+            >
+              <RefreshCw
+                className={cn(
+                  "size-4",
+                  isRefreshing && "motion-safe:animate-spin",
+                )}
+              />
+              {isRefreshing ? "Refreshing…" : "Refresh"}
+            </HoneyButton>
+          </div>
         </header>
 
         <section
@@ -179,6 +262,10 @@ function AdminDashboard() {
         </section>
 
         <section className="mt-8">
+          <OwnerAlertPanel />
+        </section>
+
+        <section className="mt-8">
           <h2 className="mb-4 font-display text-xl font-semibold text-foreground">
             Job requests
           </h2>
@@ -217,16 +304,44 @@ function AdminDashboard() {
               </HoneyCard>
             )}
 
-          <div className="space-y-4">
-            {requests.map((job, index) => (
-              <AdminJobCard
-                key={job.id.toString()}
-                job={job}
-                index={index + 1}
-                bees={bees}
-              />
-            ))}
-          </div>
+          {awaitingQuote.length > 0 && (
+            <div data-ocid="admin.awaiting_quote_section" className="mb-8">
+              <div className="mb-3 flex flex-wrap items-center gap-3">
+                <h3 className="font-display text-lg font-semibold text-foreground">
+                  Awaiting your quote
+                </h3>
+                <HexStatus
+                  data-ocid="admin.awaiting_quote_count"
+                  label={`${awaitingQuote.length} ${
+                    awaitingQuote.length === 1 ? "request" : "requests"
+                  }`}
+                  toneClass="border-primary/50 bg-primary/15 text-primary"
+                />
+                <button
+                  type="button"
+                  data-ocid="admin.mark_all_seen_button"
+                  onClick={() =>
+                    markManySeen(awaitingQuote.map((job) => job.id))
+                  }
+                  className="ml-auto text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground underline-offset-4 transition-smooth hover:text-primary hover:underline"
+                >
+                  Mark all as read
+                </button>
+              </div>
+              <div className="space-y-4">{awaitingQuote.map(renderCard)}</div>
+            </div>
+          )}
+
+          {inProgress.length > 0 && (
+            <div data-ocid="admin.in_progress_section">
+              {awaitingQuote.length > 0 && (
+                <h3 className="mb-3 font-display text-lg font-semibold text-foreground">
+                  In progress &amp; completed
+                </h3>
+              )}
+              <div className="space-y-4">{inProgress.map(renderCard)}</div>
+            </div>
+          )}
         </section>
       </div>
     </div>
@@ -649,6 +764,472 @@ function StripeSettingsPanel() {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Owner alerts (email + text)                                         */
+/* ------------------------------------------------------------------ */
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/**
+ * Normalize a US-style phone number to E.164 (`+1XXXXXXXXXX`).
+ *
+ * Accepts an optional country code, spaces, dashes, dots, parentheses and a
+ * leading `+`. Returns `null` when the digits cannot form a valid number, so
+ * the caller can show an inline error instead of sending a malformed value.
+ */
+function normalizePhoneToE164(input: string): string | null {
+  const trimmed = input.trim();
+  if (trimmed.length === 0) return null;
+
+  const hasPlus = trimmed.startsWith("+");
+  const digits = trimmed.replace(/\D/g, "");
+  if (digits.length === 0) return null;
+
+  // A leading `+` means the caller already supplied a country code.
+  if (hasPlus) {
+    return digits.length >= 8 && digits.length <= 15 ? `+${digits}` : null;
+  }
+  // Bare 10 digits are a US number; 11 digits starting with 1 are US too.
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
+  // Otherwise treat 8–15 digits as an already-international number.
+  return digits.length >= 8 && digits.length <= 15 ? `+${digits}` : null;
+}
+
+/** Human-friendly display for a stored E.164 number. */
+function formatPhoneDisplay(value: string): string {
+  const digits = value.replace(/\D/g, "");
+  if (digits.length === 11 && digits.startsWith("1")) {
+    return `${digits.slice(1, 4)}-${digits.slice(4, 7)}-${digits.slice(7)}`;
+  }
+  return value;
+}
+
+type ChannelOutcome =
+  | { kind: "sent" }
+  | { kind: "failed"; message: string }
+  | null;
+
+function OwnerAlertPanel() {
+  const emailQuery = useOwnerAlertEmail();
+  const phoneQuery = useOwnerAlertPhone();
+  const twilioQuery = useTwilioConfigStatus();
+  const setEmail = useSetOwnerAlertEmail();
+  const setPhone = useSetOwnerAlertPhone();
+  const sendTest = useSendTestAlert();
+
+  const [emailDraft, setEmailDraft] = useState("");
+  const [emailInitialized, setEmailInitialized] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [emailSaved, setEmailSaved] = useState(false);
+
+  const [phoneDraft, setPhoneDraft] = useState("");
+  const [phoneInitialized, setPhoneInitialized] = useState(false);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [phoneSaved, setPhoneSaved] = useState(false);
+
+  const [emailOutcome, setEmailOutcome] = useState<ChannelOutcome>(null);
+  const [smsOutcome, setSmsOutcome] = useState<ChannelOutcome>(null);
+
+  const savedEmail = emailQuery.data ?? "";
+  const savedPhone = phoneQuery.data ?? "";
+  const twilioConfigured = twilioQuery.data?.configured === true;
+
+  // Seed each editable draft once from the saved value. Never overwrite a
+  // draft the owner is already editing on a later refetch.
+  useEffect(() => {
+    if (!emailInitialized && emailQuery.isSuccess) {
+      setEmailDraft(savedEmail);
+      setEmailInitialized(true);
+    }
+  }, [emailInitialized, emailQuery.isSuccess, savedEmail]);
+
+  useEffect(() => {
+    if (!phoneInitialized && phoneQuery.isSuccess) {
+      setPhoneDraft(savedPhone);
+      setPhoneInitialized(true);
+    }
+  }, [phoneInitialized, phoneQuery.isSuccess, savedPhone]);
+
+  const handleSaveEmail = () => {
+    const next = emailDraft.trim();
+    setEmailSaved(false);
+    setEmailOutcome(null);
+
+    if (next.length === 0) {
+      setEmailError("Enter the email address that should receive alerts.");
+      return;
+    }
+    if (!EMAIL_PATTERN.test(next)) {
+      setEmailError("Enter a valid email address, like owner@example.com.");
+      return;
+    }
+
+    setEmailError(null);
+    setEmail.mutate(next, {
+      onSuccess: (result) => {
+        if (result.__kind__ === "ok") {
+          setEmailDraft(result.ok);
+          setEmailSaved(true);
+        } else {
+          setEmailError(
+            result.err.__kind__ === "invalidEmail"
+              ? result.err.invalidEmail
+              : "We couldn't save that address. Please try again.",
+          );
+        }
+      },
+    });
+  };
+
+  const handleSavePhone = () => {
+    setPhoneSaved(false);
+    setSmsOutcome(null);
+
+    const normalized = normalizePhoneToE164(phoneDraft);
+    if (normalized === null) {
+      setPhoneError(
+        "Enter a valid phone number, like (405) 312-4987 or +14053124987.",
+      );
+      return;
+    }
+
+    setPhoneError(null);
+    setPhone.mutate(normalized, {
+      onSuccess: (result) => {
+        if (result.__kind__ === "ok") {
+          setPhoneDraft(result.ok);
+          setPhoneSaved(true);
+        } else {
+          setPhoneError(
+            result.err.__kind__ === "invalidPhone"
+              ? result.err.invalidPhone
+              : "We couldn't save that number. Please try again.",
+          );
+        }
+      },
+    });
+  };
+
+  const handleSendTest = () => {
+    setEmailOutcome(null);
+    setSmsOutcome(null);
+    sendTest.mutate(undefined, {
+      onSuccess: (result) => {
+        setEmailOutcome(
+          result.email.__kind__ === "sent"
+            ? { kind: "sent" }
+            : { kind: "failed", message: result.email.failed },
+        );
+        setSmsOutcome(
+          result.sms.__kind__ === "sent"
+            ? { kind: "sent" }
+            : { kind: "failed", message: result.sms.failed },
+        );
+      },
+      onError: () => {
+        const message = "We couldn't send the test alert. Please try again.";
+        setEmailOutcome({ kind: "failed", message });
+        setSmsOutcome({ kind: "failed", message });
+      },
+    });
+  };
+
+  const loading = emailQuery.isLoading || phoneQuery.isLoading;
+  const loadError = emailQuery.isError || phoneQuery.isError;
+  const anyChannelConfigured = savedEmail.length > 0 || savedPhone.length > 0;
+
+  return (
+    <HoneyCard data-ocid="admin.owner_alert_panel">
+      <HoneyCardHeader
+        title="Owner alerts"
+        description="Where new-request and appointment notifications reach you by email and text."
+        action={
+          <HexStatus
+            data-ocid="admin.owner_alert_status"
+            label={anyChannelConfigured ? "Alerts on" : "Not set up"}
+            toneClass={
+              anyChannelConfigured
+                ? "border-success/40 bg-success/15 text-success"
+                : "border-destructive/40 bg-destructive/15 text-destructive"
+            }
+          />
+        }
+      />
+
+      {loading ? (
+        <HoneyLoader
+          data-ocid="admin.owner_alert_loading_state"
+          label="Loading alert settings"
+        />
+      ) : loadError ? (
+        <p
+          data-ocid="admin.owner_alert_load_error_state"
+          className="text-sm text-destructive"
+        >
+          We couldn&apos;t load the alert settings. Please refresh.
+        </p>
+      ) : (
+        <div className="grid gap-6">
+          {/* Email channel */}
+          <div
+            data-ocid="admin.owner_alert_email_channel"
+            className="rounded-xl border border-border/70 bg-muted/25 p-4"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                <Mail className="size-4" />
+                Email
+              </span>
+              <HexStatus
+                data-ocid="admin.owner_alert_email_configured"
+                label={savedEmail ? "Configured" : "Not configured"}
+                toneClass={
+                  savedEmail
+                    ? "border-success/40 bg-success/15 text-success"
+                    : "border-destructive/40 bg-destructive/15 text-destructive"
+                }
+              />
+            </div>
+
+            <div className="mt-3">
+              <Label htmlFor="owner-alert-email">Owner alert email</Label>
+              <Input
+                id="owner-alert-email"
+                type="email"
+                autoComplete="email"
+                data-ocid="admin.owner_alert_email_input"
+                value={emailDraft}
+                onChange={(event) => {
+                  setEmailDraft(event.target.value);
+                  setEmailError(null);
+                  setEmailSaved(false);
+                }}
+                placeholder="owner@honeydo.com"
+                aria-invalid={emailError !== null}
+                aria-describedby={
+                  emailError ? "owner-alert-email-error" : undefined
+                }
+                className="mt-2 min-h-12"
+              />
+              {emailError && (
+                <p
+                  id="owner-alert-email-error"
+                  data-ocid="admin.owner_alert_error_state"
+                  className="mt-2 text-sm text-destructive"
+                >
+                  {emailError}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <HoneyButton
+                data-ocid="admin.owner_alert_save_button"
+                disabled={setEmail.isPending || emailDraft.trim().length === 0}
+                onClick={handleSaveEmail}
+                className="sm:w-auto"
+              >
+                <Mail className="size-4" />
+                {setEmail.isPending ? "Saving…" : "Save alert email"}
+              </HoneyButton>
+
+              {emailSaved && (
+                <p
+                  data-ocid="admin.owner_alert_saved_state"
+                  className="text-sm text-success"
+                >
+                  Alert email saved.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Text channel */}
+          <div
+            data-ocid="admin.owner_alert_phone_channel"
+            className="rounded-xl border border-border/70 bg-muted/25 p-4"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                <MessageSquare className="size-4" />
+                Text message
+              </span>
+              <HexStatus
+                data-ocid="admin.owner_alert_phone_configured"
+                label={
+                  savedPhone && twilioConfigured
+                    ? "Configured"
+                    : savedPhone
+                      ? "Number saved"
+                      : "Not configured"
+                }
+                toneClass={
+                  savedPhone && twilioConfigured
+                    ? "border-success/40 bg-success/15 text-success"
+                    : "border-destructive/40 bg-destructive/15 text-destructive"
+                }
+              />
+            </div>
+
+            <div className="mt-3">
+              <Label htmlFor="owner-alert-phone">Owner alert phone</Label>
+              <Input
+                id="owner-alert-phone"
+                type="tel"
+                autoComplete="tel"
+                data-ocid="admin.owner_alert_phone_input"
+                value={phoneDraft}
+                onChange={(event) => {
+                  setPhoneDraft(event.target.value);
+                  setPhoneError(null);
+                  setPhoneSaved(false);
+                }}
+                placeholder="(405) 312-4987"
+                aria-invalid={phoneError !== null}
+                aria-describedby={
+                  phoneError ? "owner-alert-phone-error" : undefined
+                }
+                className="mt-2 min-h-12"
+              />
+              {phoneError && (
+                <p
+                  id="owner-alert-phone-error"
+                  data-ocid="admin.owner_alert_phone_error_state"
+                  className="mt-2 text-sm text-destructive"
+                >
+                  {phoneError}
+                </p>
+              )}
+              {savedPhone && !phoneError && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Saved as{" "}
+                  <span className="font-mono text-foreground">
+                    {savedPhone}
+                  </span>{" "}
+                  ({formatPhoneDisplay(savedPhone)}).
+                </p>
+              )}
+            </div>
+
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <HoneyButton
+                data-ocid="admin.owner_alert_phone_save_button"
+                disabled={setPhone.isPending || phoneDraft.trim().length === 0}
+                onClick={handleSavePhone}
+                className="sm:w-auto"
+              >
+                <Phone className="size-4" />
+                {setPhone.isPending ? "Saving…" : "Save alert phone"}
+              </HoneyButton>
+
+              {phoneSaved && (
+                <p
+                  data-ocid="admin.owner_alert_phone_saved_state"
+                  className="text-sm text-success"
+                >
+                  Alert phone saved.
+                </p>
+              )}
+            </div>
+
+            {!twilioConfigured && (
+              <p
+                data-ocid="admin.owner_alert_twilio_note"
+                className="mt-3 text-xs text-muted-foreground"
+              >
+                Text alerts need the Twilio messaging credential configured on
+                the backend before they can be delivered.
+              </p>
+            )}
+          </div>
+
+          {/* Combined test action */}
+          <div className="border-t border-border/70 pt-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <HoneyButton
+                variant="secondary"
+                data-ocid="admin.owner_alert_test_button"
+                disabled={sendTest.isPending || !anyChannelConfigured}
+                onClick={handleSendTest}
+                className="sm:w-auto"
+              >
+                <Send className="size-4" />
+                {sendTest.isPending ? "Sending…" : "Send test alert"}
+              </HoneyButton>
+              <p className="text-xs text-muted-foreground">
+                Sends a sample alert to both the saved email and the saved
+                phone.
+              </p>
+            </div>
+
+            {(emailOutcome || smsOutcome) && (
+              <ul
+                data-ocid="admin.owner_alert_test_result"
+                className="mt-4 grid gap-3 sm:grid-cols-2"
+              >
+                <ChannelResultRow
+                  ocid="admin.owner_alert_test_email_result"
+                  icon={<Mail className="size-4" />}
+                  label="Email"
+                  target={savedEmail}
+                  outcome={emailOutcome}
+                />
+                <ChannelResultRow
+                  ocid="admin.owner_alert_test_sms_result"
+                  icon={<MessageSquare className="size-4" />}
+                  label="Text"
+                  target={savedPhone ? formatPhoneDisplay(savedPhone) : ""}
+                  outcome={smsOutcome}
+                />
+              </ul>
+            )}
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            Every new request and appointment confirmation is emailed and texted
+            to these contacts.
+          </p>
+        </div>
+      )}
+    </HoneyCard>
+  );
+}
+
+function ChannelResultRow({
+  ocid,
+  icon,
+  label,
+  target,
+  outcome,
+}: {
+  ocid: string;
+  icon: ReactNode;
+  label: string;
+  target: string;
+  outcome: ChannelOutcome;
+}) {
+  if (!outcome) return null;
+  const sent = outcome.kind === "sent";
+  return (
+    <li
+      data-ocid={ocid}
+      className={cn(
+        "flex items-start gap-2 rounded-xl border p-3 text-sm",
+        sent
+          ? "border-success/50 bg-success/10 text-success"
+          : "border-destructive/50 bg-destructive/10 text-destructive",
+      )}
+    >
+      <span className="mt-0.5 shrink-0">{icon}</span>
+      <span className="min-w-0">
+        <span className="font-semibold">{label}: </span>
+        {sent ? (target ? `sent to ${target}.` : "sent.") : outcome.message}
+      </span>
+    </li>
+  );
+}
+
 function StatCard({
   label,
   value,
@@ -686,10 +1267,14 @@ function AdminJobCard({
   job,
   index,
   bees,
+  isNew,
+  onOpen,
 }: {
   job: JobRequestView;
   index: number;
   bees: BeeView[];
+  isNew: boolean;
+  onOpen: () => void;
 }) {
   const service = getService(job.category);
   const status = getStatusMeta(job.status);
@@ -707,9 +1292,30 @@ function AdminJobCard({
 
   const upcoming = nextStatus(job.status);
   const onPackage = isPackageActive(job.packageEnrollment);
+  const awaitingQuote = isAwaitingQuote(job);
 
   return (
-    <HoneyCard data-ocid={`admin.request_card.${index}`}>
+    <HoneyCard
+      data-ocid={`admin.request_card.${index}`}
+      onFocusCapture={onOpen}
+      onClick={onOpen}
+      className={cn(
+        isNew &&
+          "border-primary/70 shadow-honey ring-2 ring-primary/40 ring-offset-2 ring-offset-background",
+      )}
+    >
+      {isNew && (
+        <div
+          data-ocid={`admin.request_new_banner.${index}`}
+          className="mb-4 flex items-center gap-2 rounded-xl border border-primary/50 bg-primary/15 px-3 py-2"
+        >
+          <Sparkles className="size-4 shrink-0 text-primary" />
+          <span className="text-outline-black text-xs font-bold uppercase tracking-[0.18em] text-primary">
+            New request — awaiting your quote
+          </span>
+        </div>
+      )}
+
       <HoneyCardHeader
         title={service.label}
         description={`${job.customerName} · ${formatReference(job.referenceCode)}`}
@@ -731,9 +1337,27 @@ function AdminJobCard({
         }
       />
 
+      {awaitingQuote && (
+        <div
+          data-ocid={`admin.request_summary.${index}`}
+          className="mb-4 grid grid-cols-2 gap-3 rounded-xl border border-primary/40 bg-primary/10 p-4 sm:grid-cols-3"
+        >
+          <SummaryItem label="Customer" value={job.customerName} />
+          <SummaryItem label="Preferred timing" value={job.preferredTiming} />
+          <SummaryItem
+            label="Submitted"
+            value={formatDateTime(job.createdAt)}
+          />
+        </div>
+      )}
+
       <dl className="grid gap-3 sm:grid-cols-2">
-        <Detail label="Received" value={formatDateTime(job.createdAt)} />
-        <Detail label="Preferred timing" value={job.preferredTiming} />
+        {!awaitingQuote && (
+          <>
+            <Detail label="Received" value={formatDateTime(job.createdAt)} />
+            <Detail label="Preferred timing" value={job.preferredTiming} />
+          </>
+        )}
         <ContactDetail
           label="Phone"
           value={job.phone}
@@ -1320,6 +1944,20 @@ function Detail({ label, value }: { label: string; value: string }) {
         {label}
       </dt>
       <dd className="mt-1 truncate text-sm text-foreground">{value}</dd>
+    </div>
+  );
+}
+
+/** One at-a-glance field on a new request's summary strip. */
+function SummaryItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-primary">
+        {label}
+      </p>
+      <p className="mt-1 truncate text-sm font-semibold text-foreground">
+        {value}
+      </p>
     </div>
   );
 }

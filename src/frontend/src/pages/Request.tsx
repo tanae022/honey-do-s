@@ -626,7 +626,7 @@ export function RequestPage() {
             </p>
           )}
 
-          <div className="sticky bottom-4 z-20 flex flex-col gap-3 sm:static sm:flex-row sm:justify-end">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
             <HoneyButton
               type="submit"
               size="lg"

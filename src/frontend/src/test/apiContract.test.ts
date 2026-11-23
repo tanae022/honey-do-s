@@ -43,6 +43,13 @@ const HONEY_METHODS: ActorMethodName[] = [
   "getCustomerVisitHistory",
 ];
 
+/** The owner-alert-email methods added this build. */
+const OWNER_ALERT_METHODS: ActorMethodName[] = [
+  "getOwnerAlertEmail",
+  "setOwnerAlertEmail",
+  "sendTestAlert",
+];
+
 describe("backend actor consumer contract", () => {
   it("exposes every method the lifecycle depends on", () => {
     const actor = createMockActor();
@@ -56,6 +63,37 @@ describe("backend actor consumer contract", () => {
     for (const method of HONEY_METHODS) {
       expect(typeof actor[method]).toBe("function");
     }
+  });
+
+  it("exposes every owner-alert-email method the UI calls", () => {
+    const actor = createMockActor();
+    for (const method of OWNER_ALERT_METHODS) {
+      expect(typeof actor[method]).toBe("function");
+    }
+  });
+
+  it("reads the owner alert email as a string", async () => {
+    const actor = createMockActor();
+    actor.getOwnerAlertEmail.mockResolvedValue("owner@honeydo.com");
+    await expect(actor.getOwnerAlertEmail()).resolves.toBe("owner@honeydo.com");
+  });
+
+  it("saves the owner alert email and returns a result variant", async () => {
+    const actor = createMockActor();
+    actor.setOwnerAlertEmail.mockResolvedValue({
+      __kind__: "ok",
+      ok: "owner@honeydo.com",
+    });
+    const result = await actor.setOwnerAlertEmail("owner@honeydo.com");
+    expect(actor.setOwnerAlertEmail).toHaveBeenCalledWith("owner@honeydo.com");
+    expect(result.__kind__).toBe("ok");
+  });
+
+  it("reports the test alert outcome as a sent/failed variant", async () => {
+    const actor = createMockActor();
+    actor.sendTestAlert.mockResolvedValue({ __kind__: "sent", sent: null });
+    const result = await actor.sendTestAlert();
+    expect(result.__kind__).toBe("sent");
   });
 
   it("creates a bee with a name and specialty", async () => {

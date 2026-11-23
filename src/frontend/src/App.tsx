@@ -20,7 +20,60 @@ const TrackPage = lazy(() =>
   import("@/pages/Track").then((module) => ({ default: module.TrackPage })),
 );
 const AdminPage = lazy(() =>
-  import("@/pages/Admin").then((module) => ({ default: module.AdminPage })),
+  import("@/pages/admin/Dashboard").then((module) => ({
+    default: module.DashboardPage,
+  })),
+);
+const RequestsPage = lazy(() =>
+  import("@/pages/Requests").then((module) => ({
+    default: module.RequestsPage,
+  })),
+);
+const CalendarPage = lazy(() =>
+  import("@/pages/Calendar").then((module) => ({
+    default: module.CalendarPage,
+  })),
+);
+const CustomersPage = lazy(() =>
+  import("@/pages/Customers").then((module) => ({
+    default: module.CustomersPage,
+  })),
+);
+const CustomerProfilePage = lazy(() =>
+  import("@/pages/CustomerProfile").then((module) => ({
+    default: module.CustomerProfilePage,
+  })),
+);
+const QuotesPage = lazy(() =>
+  import("@/pages/Quotes").then((module) => ({ default: module.QuotesPage })),
+);
+const JobsPage = lazy(() =>
+  import("@/pages/Jobs").then((module) => ({ default: module.JobsPage })),
+);
+const PaymentsPage = lazy(() =>
+  import("@/pages/Payments").then((module) => ({
+    default: module.PaymentsPage,
+  })),
+);
+const MessagesPage = lazy(() =>
+  import("@/pages/Messages").then((module) => ({
+    default: module.MessagesPage,
+  })),
+);
+const NotificationsPage = lazy(() =>
+  import("@/pages/Notifications").then((module) => ({
+    default: module.NotificationsPage,
+  })),
+);
+const SettingsPage = lazy(() =>
+  import("@/pages/admin/Settings").then((module) => ({
+    default: module.SettingsPage,
+  })),
+);
+const SchedulePage = lazy(() =>
+  import("@/pages/Schedule").then((module) => ({
+    default: module.SchedulePage,
+  })),
 );
 
 function PageFallback() {
@@ -67,10 +120,79 @@ const trackRoute = createRoute({
   component: TrackPage,
 });
 
+/* ---- Admin routes ---- */
+
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/admin",
   component: AdminPage,
+});
+
+const adminRequestsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/requests",
+  component: RequestsPage,
+});
+
+const adminCalendarRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/calendar",
+  component: CalendarPage,
+});
+
+const customersRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/customers",
+  component: CustomersPage,
+});
+
+const customerProfileRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/customers/$customerId",
+  component: CustomerProfilePage,
+});
+
+const quotesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/quotes",
+  component: QuotesPage,
+});
+
+const jobsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/jobs",
+  component: JobsPage,
+});
+
+const paymentsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/payments",
+  component: PaymentsPage,
+});
+
+const messagesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/messages",
+  component: MessagesPage,
+});
+
+const notificationsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/notifications",
+  component: NotificationsPage,
+});
+
+const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/settings",
+  component: SettingsPage,
+});
+
+/* Legacy schedule route kept reachable for existing links. */
+const scheduleRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/admin/schedule",
+  component: SchedulePage,
 });
 
 const routeTree = rootRoute.addChildren([
@@ -78,6 +200,17 @@ const routeTree = rootRoute.addChildren([
   requestRoute,
   trackRoute,
   adminRoute,
+  adminRequestsRoute,
+  adminCalendarRoute,
+  customersRoute,
+  customerProfileRoute,
+  quotesRoute,
+  jobsRoute,
+  paymentsRoute,
+  messagesRoute,
+  notificationsRoute,
+  settingsRoute,
+  scheduleRoute,
 ]);
 
 const router = createRouter({

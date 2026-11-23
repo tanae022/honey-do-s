@@ -103,6 +103,13 @@ export default {
           "0 1px 0 oklch(0.98 0.06 96 / 0.5), 0 2px 6px -2px oklch(0.05 0.01 64 / 0.85)",
         "honey-drip":
           "inset 0 1px 0 oklch(0.99 0.06 96 / 0.72), 0 6px 14px -6px oklch(0.5 0.15 60 / 0.62)",
+        "crm-row":
+          "inset 0 1px 0 oklch(0.9 0.08 90 / 0.12), 0 10px 24px -18px oklch(0.05 0.01 60 / 0.9)",
+        "notification":
+          "0 0 0 1px oklch(0.72 0.19 44 / 0.5), 0 0 16px -2px oklch(0.75 0.19 48 / 0.6)",
+        subtle: "0 1px 2px oklch(0.3 0.02 260 / 0.06), 0 2px 8px -4px oklch(0.3 0.02 260 / 0.12)",
+        admin: "0 1px 2px oklch(0.3 0.02 260 / 0.08), 0 4px 14px -6px oklch(0.3 0.02 260 / 0.14)",
+        "admin-lg": "0 2px 4px oklch(0.3 0.02 260 / 0.08), 0 12px 32px -12px oklch(0.3 0.02 260 / 0.18)",
       },
       keyframes: {
         "accordion-down": {
@@ -184,6 +191,14 @@ export default {
           "0%": { backgroundPosition: "0 0" },
           "100%": { backgroundPosition: "34px 60px" },
         },
+        "comb-drift-far": {
+          "0%": { backgroundPosition: "0 0" },
+          "100%": { backgroundPosition: "26px 45px" },
+        },
+        "comb-drift-near": {
+          "0%": { backgroundPosition: "0 0" },
+          "100%": { backgroundPosition: "52px 90px" },
+        },
         "honey-drip-fall": {
           "0%": { transform: "translateY(-8px) scaleY(0.5)", opacity: "0" },
           "35%": { opacity: "1" },
@@ -197,6 +212,23 @@ export default {
         "honey-sheen": {
           "0%": { backgroundPosition: "-140% 0" },
           "100%": { backgroundPosition: "240% 0" },
+        },
+        "notification-pulse": {
+          "0%, 100%": { transform: "scale(1)", opacity: "1" },
+          "50%": { transform: "scale(1.14)", opacity: "0.82" },
+        },
+        "badge-pop": {
+          "0%": { transform: "scale(0.6)", opacity: "0" },
+          "60%": { transform: "scale(1.12)", opacity: "1" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        "row-enter": {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "admin-enter": {
+          from: { opacity: "0", transform: "translateY(6px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
@@ -216,10 +248,17 @@ export default {
         "wing-shimmer": "wing-shimmer 2.6s ease-in-out infinite",
         "hive-breathe": "hive-breathe 8s ease-in-out infinite",
         "comb-drift": "comb-drift 24s linear infinite",
+        "comb-drift-far": "comb-drift-far 68s linear infinite",
+        "comb-drift-near": "comb-drift-near 34s linear infinite",
         "honey-drip-fall":
           "honey-drip-fall 1.1s cubic-bezier(0.34, 1.56, 0.64, 1) both",
         "honey-pool": "honey-pool 5.5s ease-in-out infinite",
         "honey-sheen": "honey-sheen 4.2s ease-in-out infinite",
+        "notification-pulse":
+          "notification-pulse 2.4s ease-in-out infinite",
+        "badge-pop": "badge-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both",
+        "row-enter": "row-enter 0.4s cubic-bezier(0.22, 1, 0.36, 1) both",
+        "admin-enter": "admin-enter 0.3s cubic-bezier(0.22, 1, 0.36, 1) both",
       },
     },
   },

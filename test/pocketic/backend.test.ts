@@ -168,3 +168,58 @@ it("rejects the owner-only bee list from a guest caller", async () => {
     await guestPic.tearDown();
   }
 });
+
+/**
+ * The owner-alert-email surface added this build is admin-only, and the lane
+ * cannot bootstrap an admin caller (see the note above). Calling each method as
+ * a guest still proves the real canister implements it and enforces its
+ * authorization rule rather than trapping as an unimplemented stub. The
+ * admin-side behavior is covered at the frontend seam in
+ * `src/test/ownerAlertCover.test.tsx` and `src/test/apiContract.test.ts`.
+ */
+it("rejects the owner-alert-email methods from a guest caller", async () => {
+  const guestPic = await PocketIc.create(PIC_URL);
+  try {
+    const { actor: guestActor } = await guestPic.setupCanister<_SERVICE>({
+      idlFactory,
+      wasm: BACKEND_WASM,
+    });
+    await expect(guestActor.getOwnerAlertEmail()).rejects.toThrow(
+      /Unauthorized/i,
+    );
+    await expect(
+      guestActor.setOwnerAlertEmail("owner@example.com"),
+    ).rejects.toThrow(/Unauthorized/i);
+    await expect(guestActor.sendTestAlert()).rejects.toThrow(/Unauthorized/i);
+  } finally {
+    await guestPic.tearDown();
+  }
+});
+
+/**
+ * The owner-alert-phone and Twilio-status surface added this build is admin-only
+ * too. Calling each method as a guest proves the real canister implements it and
+ * enforces its authorization rule rather than trapping as an unimplemented stub.
+ * The admin-side behavior is covered at the frontend seam in
+ * `src/test/ownerAlertPhoneCover.test.tsx`.
+ */
+it("rejects the owner-alert-phone and Twilio-status methods from a guest caller", async () => {
+  const guestPic = await PocketIc.create(PIC_URL);
+  try {
+    const { actor: guestActor } = await guestPic.setupCanister<_SERVICE>({
+      idlFactory,
+      wasm: BACKEND_WASM,
+    });
+    await expect(guestActor.getOwnerAlertPhone()).rejects.toThrow(
+      /Unauthorized/i,
+    );
+    await expect(
+      guestActor.setOwnerAlertPhone("+14053124987"),
+    ).rejects.toThrow(/Unauthorized/i);
+    await expect(guestActor.getTwilioConfigStatus()).rejects.toThrow(
+      /Unauthorized/i,
+    );
+  } finally {
+    await guestPic.tearDown();
+  }
+});

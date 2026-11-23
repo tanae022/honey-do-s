@@ -1,10 +1,29 @@
+import { NewRequestAlert } from "@/components/NewRequestAlert";
 import { BeeAccent } from "@/components/honey/BeeAccent";
 import { HoneyButton } from "@/components/honey/HoneyButton";
-import { useIsAdmin } from "@/hooks/useJobs";
+import { useIsAdmin, useNewRequestCount } from "@/hooks/useJobs";
 import { cn } from "@/lib/utils";
 import { useInternetIdentity } from "@caffeineai/core-infrastructure";
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LogIn, LogOut, Menu, Phone, ShieldCheck, X } from "lucide-react";
+import {
+  Bell,
+  CalendarDays,
+  ClipboardList,
+  Inbox,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  type LucideIcon,
+  Menu,
+  MessagesSquare,
+  Phone,
+  Quote,
+  Settings,
+  ShieldCheck,
+  Users,
+  Wallet,
+  X,
+} from "lucide-react";
 import { type ReactNode, useState } from "react";
 
 const LOGO_SRC = "/assets/generated/honey-dos-logo.dim_1024x1024.png";
@@ -17,6 +36,8 @@ interface NavItem {
   to: string;
   label: string;
   adminOnly?: boolean;
+  /** Also mark active when the pathname starts with this prefix. */
+  matchPrefix?: string;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -26,31 +47,137 @@ const NAV_ITEMS: NavItem[] = [
   { to: "/admin", label: "Dashboard", adminOnly: true },
 ];
 
+interface AdminNavItem {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+  /** Also mark active when the pathname starts with this prefix. */
+  matchPrefix?: string;
+}
+
+/**
+ * The full admin menu. Every destination is a working route registered in
+ * App.tsx; the menu is rendered only for a signed-in admin.
+ */
+const ADMIN_NAV_ITEMS: AdminNavItem[] = [
+  { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/admin/requests", label: "Requests", icon: Inbox },
+  { to: "/admin/calendar", label: "Calendar", icon: CalendarDays },
+  {
+    to: "/admin/customers",
+    label: "Customers",
+    icon: Users,
+    matchPrefix: "/admin/customers",
+  },
+  { to: "/admin/quotes", label: "Quotes", icon: Quote },
+  { to: "/admin/jobs", label: "Jobs", icon: ClipboardList },
+  { to: "/admin/payments", label: "Payments", icon: Wallet },
+  { to: "/admin/messages", label: "Messages", icon: MessagesSquare },
+  { to: "/admin/notifications", label: "Notifications", icon: Bell },
+  { to: "/admin/settings", label: "Settings", icon: Settings },
+];
+
 interface AppLayoutProps {
   children: ReactNode;
+}
+
+/**
+ * Count badge for the Dashboard nav item — how many requests are still waiting
+ * on the owner's quote. Renders nothing at zero so the nav stays quiet.
+ */
+function NewRequestBadge({ count }: { count: number }) {
+  if (count <= 0) return null;
+  return (
+    <span
+      data-ocid="nav.new_request_badge"
+      aria-label={`${count} ${count === 1 ? "request" : "requests"} awaiting a quote`}
+      className="text-outline-black inline-flex min-w-5 items-center justify-center rounded-full border border-accent/50 bg-primary px-1.5 py-0.5 font-mono text-[0.65rem] font-bold leading-none text-primary-foreground shadow-honey"
+    >
+      {count > 99 ? "99+" : count}
+    </span>
+  );
+}
+
+/**
+ * The admin sub-navigation: a horizontally scrollable tab bar of every admin
+ * destination. Rendered only inside the admin area for a signed-in admin, so
+ * the customer-facing header stays unchanged.
+ */
+function AdminNav({ pathname }: { pathname: string }) {
+  return (
+    <nav
+      aria-label="Admin"
+      data-ocid="nav.admin_menu"
+      className="border-t border-border bg-card/95"
+    >
+      <div className="mx-auto w-full max-w-6xl px-3 sm:px-6">
+        <ul className="scrollbar-honey flex items-center gap-1 overflow-x-auto py-2">
+          {ADMIN_NAV_ITEMS.map((item) => {
+            const active = item.matchPrefix
+              ? pathname.startsWith(item.matchPrefix)
+              : pathname === item.to;
+            const Icon = item.icon;
+            return (
+              <li key={item.to} className="shrink-0">
+                <Link
+                  to={item.to}
+                  data-ocid={`nav.admin_${item.label.toLowerCase().replace(/\s+/g, "_")}_link`}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "inline-flex min-h-11 items-center gap-2 rounded-full px-3.5 text-sm font-semibold transition-smooth",
+                    active
+                      ? "bg-primary/15 text-primary"
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                  )}
+                >
+                  <Icon aria-hidden="true" className="size-4" />
+                  {item.label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </nav>
+  );
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: isAdmin } = useIsAdmin();
+  const { data: newRequestCount } = useNewRequestCount(isAdmin === true);
   const { isAuthenticated, login, clear } = useInternetIdentity();
-  const pathname = useRouterState({
-    select: (state) => state.location.pathname,
-  });
+  const routerState = useRouterState();
+  const pathname = routerState?.location?.pathname ?? "";
 
   const visibleItems = NAV_ITEMS.filter(
     (item) => !item.adminOnly || isAdmin === true,
   );
   const isLoggedIn = isAuthenticated;
+  const badgeCount = newRequestCount ?? 0;
+  // The fixed "Request a Honey Do" action belongs to the customer-facing
+  // experience only. On the admin console it would sit over profile panels and
+  // administrative controls, so it is hidden for every /admin route.
+  const isAdminArea = pathname.startsWith("/admin");
+  const showAdminNav = isAdmin === true && isAdminArea;
 
   return (
     <div className="text-outline-black relative flex min-h-dvh flex-col bg-background">
       {/* Logo-matched honeycomb + honey field, fixed behind every page.
-          Kept in sync with the body background in index.css. */}
+          Kept in sync with the body background in index.css. Inside it, three
+          beveled SVG depth planes drift at different speeds under a slow
+          breathing glow with honey glossing through the cells — a living,
+          dimensional hive wall rather than a flat tile. */}
       <div
         aria-hidden="true"
-        className="honeycomb-bg pointer-events-none fixed inset-0 -z-10"
-      />
+        className="honeycomb-bg pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+      >
+        <span className="comb-plane comb-plane-far" />
+        <span className="comb-plane comb-plane-mid" />
+        <span className="comb-plane comb-plane-near" />
+        <span className="comb-breathe" />
+        <span className="comb-honey-sheen" />
+      </div>
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-primary/10 to-transparent"
@@ -64,6 +191,10 @@ export function AppLayout({ children }: AppLayoutProps) {
         aria-hidden="true"
         className="honey-drip pointer-events-none fixed inset-x-0 bottom-0 -z-10 h-2 opacity-70"
       />
+      {/* Live in-app alert for a genuinely new request while the owner is
+          signed in with the app open. Self-gated: it watches and dings only
+          for an authenticated admin. */}
+      <NewRequestAlert />
       <header className="sticky top-0 z-50 border-b border-border bg-card/85 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-5 py-3 sm:px-8 sm:py-4">
           <Link
@@ -95,20 +226,23 @@ export function AppLayout({ children }: AppLayoutProps) {
             className="hidden items-center gap-1 md:flex"
           >
             {visibleItems.map((item) => {
-              const active = pathname === item.to;
+              const active = item.matchPrefix
+                ? pathname.startsWith(item.matchPrefix)
+                : pathname === item.to;
               return (
                 <Link
                   key={item.to}
                   to={item.to}
                   data-ocid={`nav.${item.label.toLowerCase().replace(/\s+/g, "_")}_link`}
                   className={cn(
-                    "rounded-full px-4 py-2 text-sm font-semibold transition-smooth",
+                    "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-smooth",
                     active
                       ? "bg-primary/15 text-primary"
                       : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
                   )}
                 >
                   {item.label}
+                  {item.adminOnly && <NewRequestBadge count={badgeCount} />}
                 </Link>
               );
             })}
@@ -162,7 +296,9 @@ export function AppLayout({ children }: AppLayoutProps) {
           >
             <ul className="flex flex-col gap-1">
               {visibleItems.map((item) => {
-                const active = pathname === item.to;
+                const active = item.matchPrefix
+                  ? pathname.startsWith(item.matchPrefix)
+                  : pathname === item.to;
                 return (
                   <li key={item.to}>
                     <Link
@@ -181,10 +317,48 @@ export function AppLayout({ children }: AppLayoutProps) {
                         className="hex-clip size-2.5 bg-current"
                       />
                       {item.label}
+                      {item.adminOnly && (
+                        <span className="ml-auto">
+                          <NewRequestBadge count={badgeCount} />
+                        </span>
+                      )}
                     </Link>
                   </li>
                 );
               })}
+              {isAdmin === true && (
+                <li className="mt-2 border-t border-border/70 pt-3">
+                  <span className="px-4 text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+                    Admin
+                  </span>
+                  <ul className="mt-2 flex flex-col gap-1">
+                    {ADMIN_NAV_ITEMS.map((item) => {
+                      const active = item.matchPrefix
+                        ? pathname.startsWith(item.matchPrefix)
+                        : pathname === item.to;
+                      const Icon = item.icon;
+                      return (
+                        <li key={item.to}>
+                          <Link
+                            to={item.to}
+                            data-ocid={`nav.mobile_admin_${item.label.toLowerCase().replace(/\s+/g, "_")}_link`}
+                            onClick={() => setMenuOpen(false)}
+                            className={cn(
+                              "flex min-h-12 items-center gap-3 rounded-xl px-4 text-base font-semibold transition-smooth",
+                              active
+                                ? "bg-primary/15 text-primary"
+                                : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                            )}
+                          >
+                            <Icon aria-hidden="true" className="size-4" />
+                            {item.label}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
+              )}
               <li className="pt-2">
                 {isLoggedIn ? (
                   <HoneyButton
@@ -219,18 +393,23 @@ export function AppLayout({ children }: AppLayoutProps) {
             </ul>
           </nav>
         )}
+
+        {showAdminNav && <AdminNav pathname={pathname} />}
       </header>
 
       <main className="relative flex-1 bg-background/80">{children}</main>
 
-      {/* Mobile-only sticky primary action */}
-      <div className="sticky bottom-0 z-40 border-t border-border bg-background/90 px-5 py-3 backdrop-blur-md md:hidden">
-        <Link to="/request" data-ocid="nav.sticky_request_button">
-          <HoneyButton size="lg" className="w-full">
-            Request a Honey Do
-          </HoneyButton>
-        </Link>
-      </div>
+      {/* Mobile-only sticky primary action — customer-facing routes only, so it
+          never covers customer profile information or admin controls. */}
+      {!isAdminArea && (
+        <div className="sticky bottom-0 z-40 border-t border-border bg-background/90 px-5 py-3 backdrop-blur-md md:hidden">
+          <Link to="/request" data-ocid="nav.sticky_request_button">
+            <HoneyButton size="lg" className="w-full">
+              Request a Honey Do
+            </HoneyButton>
+          </Link>
+        </div>
+      )}
 
       <footer className="border-t border-border bg-muted/40 honeycomb-texture">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-10 sm:px-8 md:flex-row md:items-start md:justify-between">

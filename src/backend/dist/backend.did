@@ -1,0 +1,1040 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type VisitRecord = 
+ record {
+   beeId: opt BeeId;
+   beeName: opt text;
+   completedAt: Timestamp;
+   jobId: JobId;
+   referenceCode: ReferenceCode;
+   "service": ServiceCategory;
+ };
+type Value = 
+ variant {
+   "bool": bool;
+   float: float64;
+   "int": int;
+   "nat": nat;
+   "null";
+   "text": text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type TwilioConfigStatus = 
+ record {
+   configured: bool;
+   fromNumber: text;
+ };
+type TransformationOutput = 
+ record {
+   body: blob;
+   headers: vec HttpHeader;
+   status: nat;
+ };
+type TransformationInput = 
+ record {
+   context: blob;
+   response: HttpRequestResult;
+ };
+type Timestamp = int;
+type TestAlertResult = 
+ record {
+   email: ChannelResult;
+   sms: ChannelResult;
+ };
+type TaxSetting = 
+ record {
+   enabled: bool;
+   ratePercent: nat;
+ };
+type StripeSessionStatus = 
+ variant {
+   completed: record {
+                response: text;
+                userPrincipal: opt text;
+              };
+   failed: record {error: text;};
+ };
+type StripeConfiguration = 
+ record {
+   allowedCountries: vec text;
+   secretKey: text;
+ };
+type ShoppingItem = 
+ record {
+   currency: text;
+   priceInCents: nat;
+   productDescription: text;
+   productName: text;
+   quantity: nat;
+ };
+type SettingsError = 
+ variant {
+   invalidInput: text;
+   notAuthorized;
+   notFound;
+ };
+type SettingsBundle = 
+ record {
+   admin: AdminSettings;
+   business: BusinessSettings;
+   deposit: DepositSetting;
+   payment: PaymentSettings;
+   quote: QuoteSettings;
+   tax: TaxSetting;
+ };
+type ServiceCategory = 
+ variant {
+   cleanOrganize;
+   errands;
+   fixIt;
+   house;
+   moveLift;
+   mowing;
+   showMe;
+   yardPlants;
+ };
+type Review = 
+ record {
+   comment: text;
+   createdAt: Timestamp;
+   rating: nat;
+ };
+type Result__1 = 
+ record {
+   hasMore: bool;
+   rows: vec vec Cell;
+ };
+type Result_9 = 
+ variant {
+   err: OwnerAlertError;
+   ok: text;
+ };
+type Result_8 = 
+ variant {
+   err: OwnerAlertPhoneError;
+   ok: text;
+ };
+type Result_7 = 
+ variant {
+   err: BeeError;
+   ok: JobRequestView;
+ };
+type Result_6 = 
+ variant {
+   err: SettingsError;
+   ok: PaymentSettings;
+ };
+type Result_5 = 
+ variant {
+   err: SettingsError;
+   ok: QuoteSettings;
+ };
+type Result_4 = 
+ variant {
+   err: SettingsError;
+   ok: TaxSetting;
+ };
+type Result_3 = 
+ variant {
+   err: BeeError;
+   ok: BeeView;
+ };
+type Result_21 = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Result_20 = 
+ variant {
+   err: JobError;
+   ok: text;
+ };
+type Result_2 = 
+ variant {
+   err: CustomerError;
+   ok: CustomerView;
+ };
+type Result_19 = 
+ variant {
+   err: JobError;
+   ok: JobRecordView;
+ };
+type Result_18 = 
+ variant {
+   err: SettingsError;
+   ok;
+ };
+type Result_17 = 
+ variant {
+   err: NotificationError;
+   ok;
+ };
+type Result_16 = 
+ variant {
+   err: MessageError;
+   ok: MessageView;
+ };
+type Result_15 = 
+ variant {
+   err: JobError;
+   ok: PaymentHistory;
+ };
+type Result_14 = 
+ variant {
+   err: JobError;
+   ok: QuoteSendResult;
+ };
+type Result_13 = 
+ variant {
+   err: SettingsError;
+   ok: AdminSettings;
+ };
+type Result_12 = 
+ variant {
+   err: SettingsError;
+   ok: BusinessSettings;
+ };
+type Result_11 = 
+ variant {
+   err: SettingsError;
+   ok: DepositSetting;
+ };
+type Result_10 = 
+ variant {
+   err: FrontendOriginError;
+   ok: text;
+ };
+type Result_1 = 
+ variant {
+   err: SettingsError;
+   ok: DiscountRule;
+ };
+type Result = 
+ variant {
+   err: JobError;
+   ok: JobRequestView;
+ };
+type ReferenceCode = text;
+type QuoteView = 
+ record {
+   depositRequired: nat;
+   discountAmount: nat;
+   discountApplied: bool;
+   expired: bool;
+   expiresAt: opt Timestamp;
+   laborCharge: nat;
+   lineItems: vec QuoteLineItem;
+   materialsCharge: nat;
+   note: text;
+   pricing: opt QuotePricing;
+   quoteNumber: text;
+   referenceCode: ReferenceCode;
+   remainingBalance: nat;
+   status: QuoteStatus;
+   subtotal: nat;
+   total: nat;
+   workDescription: text;
+ };
+type QuoteStatus = 
+ variant {
+   approved;
+   declined;
+   draft;
+   sent;
+ };
+type QuoteSettings = 
+ record {
+   terms: text;
+   validityDays: nat;
+ };
+type QuoteSendResult = 
+ record {
+   email: QuoteEmailResult;
+   view: JobRequestView;
+ };
+type QuotePricing = 
+ record {
+   adjustedSubtotal: nat;
+   depositAmount: nat;
+   discount: DiscountApplication;
+   discountAmount: nat;
+   finalTotal: nat;
+   originalSubtotal: nat;
+   remainingBalance: nat;
+   taxAmount: nat;
+ };
+type QuoteLineItem = 
+ record {
+   description: text;
+   quantity: nat;
+   unitPrice: nat;
+ };
+type QuoteInput = 
+ record {
+   depositRequired: nat;
+   expiresAt: opt Timestamp;
+   laborCharge: nat;
+   lineItems: vec QuoteLineItem;
+   materialsCharge: nat;
+   note: text;
+   workDescription: text;
+ };
+type QuoteEmailResult = 
+ variant {
+   failed: text;
+   sent;
+ };
+type Quote = 
+ record {
+   amount: nat;
+   createdAt: Timestamp;
+   depositRequired: nat;
+   discountAmount: nat;
+   discountApplied: bool;
+   expiresAt: opt Timestamp;
+   laborCharge: nat;
+   lineItems: vec QuoteLineItem;
+   materialsCharge: nat;
+   note: text;
+   pricing: opt QuotePricing;
+   quoteNumber: text;
+   remainingBalance: nat;
+   sentAt: Timestamp;
+   status: QuoteStatus;
+   subtotal: nat;
+   total: nat;
+   workDescription: text;
+ };
+type PreferredContact = 
+ variant {
+   email;
+   phone;
+   sms;
+ };
+type PhotoId = text;
+type PaymentSummaryView = 
+ record {
+   acceptedMethods: vec PaymentMethod;
+   adjustedSubtotal: nat;
+   appointmentAt: opt Timestamp;
+   appointmentConfirmed: bool;
+   cashAppHandle: text;
+   chimeHandle: text;
+   customerName: text;
+   depositAmount: nat;
+   depositMethod: opt PaymentMethod;
+   depositStatus: DepositStatus;
+   discountAmount: nat;
+   discountReason: text;
+   finalTotal: nat;
+   originalSubtotal: nat;
+   payPalHandle: text;
+   referenceCode: ReferenceCode;
+   remainingBalance: nat;
+   serviceDescription: text;
+   taxAmount: nat;
+   venmoHandle: text;
+ };
+type PaymentSettings = 
+ record {
+   acceptedMethods: vec PaymentMethod;
+   cashAppHandle: text;
+   chimeHandle: text;
+   payPalHandle: text;
+   venmoHandle: text;
+ };
+type PaymentMethod = 
+ variant {
+   cashApp;
+   chime;
+   payPal;
+   stripe;
+   venmo;
+ };
+type PaymentId = nat;
+type PaymentHistory = 
+ record {
+   createdAt: Timestamp;
+   customerId: CustomerId;
+   depositAmount: nat;
+   depositStatus: DepositStatus;
+   discountAmount: nat;
+   finalPayment: nat;
+   finalQuote: nat;
+   id: PaymentId;
+   jobRequestId: JobId;
+   originalQuote: nat;
+   paymentMethod: PaymentMethod;
+   referenceCode: ReferenceCode;
+   remainingBalance: nat;
+   totalPaid: nat;
+   updatedAt: Timestamp;
+ };
+type PackageEnrollment = 
+ record {
+   active: bool;
+   includedVisits: nat;
+   monthlyPrice: nat;
+   startedAt: Timestamp;
+ };
+type OwnerAlertPhoneError = 
+ variant {
+   invalidPhone: text;
+   sendFailed: text;
+ };
+type OwnerAlertError = 
+ variant {
+   invalidEmail: text;
+   sendFailed: text;
+ };
+type NotificationView = 
+ record {
+   body: text;
+   createdAt: Timestamp;
+   id: NotificationId;
+   kind: NotificationKind;
+   read: bool;
+   relatedCustomerId: opt CustomerId;
+   relatedJobId: opt JobId;
+   title: text;
+ };
+type NotificationKind = 
+ variant {
+   appointmentChanged;
+   appointmentConfirmed;
+   appointmentReminder;
+   bookingApproval;
+   customerMessage;
+   depositReceived;
+   depositSubmitted;
+   depositVerified;
+   newCustomer;
+   newMessage;
+   newRequest;
+   paymentReceived;
+   quoteApproved;
+   quoteDeclined;
+   returningCustomerRequest;
+ };
+type NotificationId = nat;
+type NotificationError = 
+ variant {
+   notAuthorized;
+   notFound;
+ };
+type MessageView__1 = 
+ record {
+   body: text;
+   createdAt: Timestamp;
+   customerId: CustomerId;
+   fromAdmin: bool;
+   id: nat;
+   jobId: opt JobId;
+ };
+type MessageView = 
+ record {
+   body: text;
+   createdAt: Timestamp;
+   customerId: CustomerId;
+   fromAdmin: bool;
+   id: MessageId;
+   jobId: opt JobId;
+ };
+type MessageId = nat;
+type MessageError = 
+ variant {
+   invalidInput: text;
+   notAuthorized;
+   notFound;
+ };
+type JobStatus = 
+ variant {
+   cancelled;
+   completed;
+   inProgress;
+   quoted;
+   requested;
+   scheduled;
+ };
+type JobRequestView = 
+ record {
+   appointment: opt Appointment;
+   assignedBeeId: opt BeeId;
+   assignedBeeName: opt text;
+   category: ServiceCategory;
+   completedAt: opt Timestamp;
+   createdAt: Timestamp;
+   customerName: text;
+   deposit: opt Deposit;
+   description: text;
+   email: text;
+   id: JobId;
+   ownParts: bool;
+   packageEnrollment: opt PackageEnrollment;
+   phone: text;
+   photoIds: vec PhotoId;
+   preferredTiming: text;
+   quote: opt Quote;
+   referenceCode: ReferenceCode;
+   review: opt Review;
+   status: JobStatus;
+ };
+type JobRequestInput = 
+ record {
+   category: ServiceCategory;
+   customerName: text;
+   description: text;
+   email: text;
+   ownParts: bool;
+   packageInterest: bool;
+   phone: text;
+   photoIds: vec PhotoId;
+   preferredTiming: text;
+ };
+type JobRecordView = 
+ record {
+   category: ServiceCategory;
+   completedAt: opt Timestamp;
+   createdAt: Timestamp;
+   customerId: CustomerId;
+   customerName: text;
+   deposit: opt Deposit;
+   id: JobRecordId;
+   jobRequestId: JobId;
+   pricing: opt QuotePricing;
+   quote: opt Quote;
+   referenceCode: ReferenceCode;
+   remainingBalance: nat;
+   scheduledAt: Timestamp;
+   serviceAddress: text;
+   status: JobRecordStatus;
+ };
+type JobRecordStatus = 
+ variant {
+   cancelled;
+   completed;
+   inProgress;
+   scheduled;
+ };
+type JobRecordId = nat;
+type JobId = nat;
+type JobError = 
+ variant {
+   invalidState: text;
+   notAuthorized;
+   notFound;
+   paymentError: text;
+ };
+type HttpRequestResult = 
+ record {
+   body: blob;
+   headers: vec HttpHeader;
+   status: nat;
+ };
+type HttpHeader = 
+ record {
+   name: text;
+   value: text;
+ };
+type FrontendOriginError = variant {invalidOrigin: text;};
+type Error = 
+ variant {
+   AmbiguousAttribute: record {
+                         field: text;
+                         sources: vec text;
+                       };
+   FrontendOriginMismatch: record {
+                             expected: vec text;
+                             got: text;
+                           };
+   FrontendOriginsNotConfigured;
+   MalformedCandid;
+   MissingField: text;
+   MixedSsoSources: record {
+                      otherKeys: vec text;
+                      ssoKeys: vec text;
+                    };
+   NoAttributes;
+   Stale: record {ageNs: nat;};
+   UnknownNonce;
+   UntrustedSsoSource: record {domain: text;};
+ };
+type DiscountRuleInput = 
+ record {
+   active: bool;
+   eligibility: DiscountEligibility;
+   endAt: opt Timestamp;
+   kind: DiscountKind;
+   maxDiscount: nat;
+   minPurchase: nat;
+   name: text;
+   startAt: opt Timestamp;
+   value: nat;
+ };
+type DiscountRule = 
+ record {
+   active: bool;
+   createdAt: Timestamp;
+   eligibility: DiscountEligibility;
+   endAt: opt Timestamp;
+   id: DiscountId;
+   kind: DiscountKind;
+   maxDiscount: nat;
+   minPurchase: nat;
+   name: text;
+   startAt: opt Timestamp;
+   value: nat;
+ };
+type DiscountKind = 
+ variant {
+   fixed;
+   percentage;
+ };
+type DiscountId = nat;
+type DiscountEligibility = 
+ variant {
+   all;
+   ownParts;
+   returningCustomer;
+ };
+type DiscountApplication = 
+ record {
+   applied: bool;
+   reason: text;
+   ruleId: opt DiscountId;
+   ruleName: text;
+ };
+type DepositStatus = 
+ variant {
+   pending;
+   rejected;
+   submitted;
+   verified;
+ };
+type DepositSetting = record {percent: nat;};
+type Deposit = 
+ record {
+   amount: nat;
+   method: PaymentMethod;
+   paid: bool;
+   paidAt: opt Timestamp;
+   status: DepositStatus;
+   stripeSessionId: opt text;
+   submittedAt: opt Timestamp;
+   verifiedAt: opt Timestamp;
+ };
+type DashboardStats = 
+ record {
+   activeJobs: nat;
+   depositsCollected: nat;
+   newRequests: nat;
+   reviewsCount: nat;
+   upcomingAppointments: nat;
+ };
+type CustomerView = 
+ record {
+   adminNotes: text;
+   createdAt: Timestamp;
+   email: text;
+   fullName: text;
+   id: CustomerId;
+   notes: vec CustomerNote;
+   phone: text;
+   preferredContact: PreferredContact;
+   serviceAddress: text;
+   status: CustomerStatus;
+ };
+type CustomerSummary = 
+ record {
+   email: text;
+   fullName: text;
+   id: CustomerId;
+   jobCount: nat;
+   phone: text;
+   serviceAddress: text;
+   status: CustomerStatus;
+ };
+type CustomerStatus = 
+ variant {
+   active;
+   archived;
+   inactive;
+ };
+type CustomerProfileView = 
+ record {
+   appointments: vec Appointment;
+   cancelledJobs: vec JobRequestView;
+   completedJobs: vec JobRequestView;
+   customer: CustomerView;
+   deposits: vec Deposit;
+   jobRecords: vec JobRecordView;
+   jobs: vec JobRequestView;
+   messages: vec MessageView__1;
+   payments: vec PaymentHistory;
+   pendingJobs: vec JobRequestView;
+   photoIds: vec PhotoId;
+   quotes: vec Quote;
+ };
+type CustomerNote = 
+ record {
+   body: text;
+   createdAt: Timestamp;
+   id: nat;
+ };
+type CustomerInput = 
+ record {
+   email: text;
+   fullName: text;
+   phone: text;
+   preferredContact: PreferredContact;
+   serviceAddress: text;
+ };
+type CustomerId = nat;
+type CustomerError = 
+ variant {
+   invalidInput: text;
+   notAuthorized;
+   notFound;
+ };
+type ChannelResult = 
+ variant {
+   failed: text;
+   sent;
+ };
+type Cell = 
+ record {
+   name: text;
+   value: Value;
+ };
+type BusinessSettings = 
+ record {
+   businessAddress: text;
+   businessEmail: text;
+   businessName: text;
+   businessPhone: text;
+ };
+type BeeView = 
+ record {
+   createdAt: Timestamp;
+   id: BeeId;
+   name: text;
+   specialty: text;
+ };
+type BeeInput = 
+ record {
+   name: text;
+   specialty: text;
+ };
+type BeeId = nat;
+type BeeError = 
+ variant {
+   invalidState: text;
+   notAuthorized;
+   notFound;
+ };
+type Appointment = 
+ record {
+   confirmed: bool;
+   scheduledAt: Timestamp;
+ };
+type AdminSettings = 
+ record {
+   appointmentReminders: bool;
+   customerRequestAlerts: bool;
+   messageAlerts: bool;
+   notificationSound: bool;
+   pushNotifications: bool;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initialize_access_control: () -> ();
+  _internet_identity_sign_in_finish: () -> (Result_21);
+  _internet_identity_sign_in_start: () -> (blob);
+  /// Guest: accept the quote attached to a job request. Marks the quote
+  /// approved and moves the job to `#scheduled`, keeping the existing
+  /// accept-to-scheduled transition working. An expired quote cannot be
+  /// accepted and returns `#invalidState`.
+  acceptQuote: (referenceCode: ReferenceCode) -> (Result);
+  /// Admin: append an internal note to a customer profile.
+  addCustomerNote: (id: CustomerId, body: text) -> (Result_2);
+  /// Admin: advance a job to its next lifecycle status.
+  advanceJobRecord: (id: JobRecordId) -> (Result_19);
+  /// Admin: advance a job request to its next lifecycle status.
+  advanceStatus: (id: JobId) -> (Result);
+  /// Admin: mark a quote as approved by the customer.
+  approveQuote: (id: JobId) -> (Result);
+  /// Admin: archive a customer without deleting their record.
+  archiveCustomer: (id: CustomerId) -> (Result_2);
+  /// Admin: assign a bee to a job request.
+  assignBeeToJob: (id: JobId, beeId: BeeId) -> (Result_7);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  /// Admin: cancel a job request. Cancellation is terminal and moves the job
+  /// into the customer profile's cancelled group. A completed job cannot be
+  /// cancelled, and cancelling an already-cancelled job is a no-op.
+  cancelJob: (id: JobId) -> (Result);
+  /// Admin: cancel a job. Cancellation is terminal.
+  cancelJobRecord: (id: JobRecordId) -> (Result_19);
+  /// Admin: mark a job completed.
+  completeJobRecord: (id: JobRecordId) -> (Result_19);
+  /// Guest: confirm the scheduled appointment.
+  confirmAppointment: (referenceCode: ReferenceCode) -> (Result);
+  /// Guest: confirm a Stripe deposit payment and mark the deposit paid.
+  confirmDepositPayment: (referenceCode: ReferenceCode) -> (Result);
+  /// Admin: convert an approved quote into a scheduled job at the given time.
+  /// The quote must be approved; the job moves to `#scheduled` with a pending
+  /// appointment.
+  convertQuoteToJob: (id: JobId, scheduledAt: Timestamp) -> (Result);
+  /// Admin: create a bee (employee) with a name and specialty.
+  createBee: (input: BeeInput) -> (Result_3);
+  /// Guest: create a Stripe checkout session for a set of shopping items.
+  createCheckoutSession: (items: vec ShoppingItem, successUrl: text,
+   cancelUrl: text) -> (text);
+  /// Admin: create a new customer record.
+  createCustomer: (input: CustomerInput) -> (Result_2);
+  /// Guest: create a Stripe checkout session for the 50% deposit on an accepted quote.
+  createDepositCheckoutSession: (referenceCode: ReferenceCode, successUrl:
+   text, cancelUrl: text) -> (Result_20);
+  /// Admin: create a new discount rule. The rule is stored inactive-safe: an
+  /// invalid window (end before start) or a zero-value percentage is rejected.
+  createDiscount: (input: DiscountRuleInput) -> (Result_1);
+  /// Admin: create a new service request for an existing customer, reusing the
+  /// customer's stored contact information. The job enters the same
+  /// service/quote/deposit/appointment/status lifecycle as a customer-submitted
+  /// request and is linked to the customer's permanent profile.
+  createJobForCustomer: (customerId: CustomerId, input: JobRequestInput) ->
+   (Result);
+  /// Admin: create a job from a confirmed request or quote. The job captures the
+  /// customer, service, address, scheduled date/time, quote, pricing, deposit,
+  /// remaining balance and initial status. Creating a job for a request that
+  /// already has one returns the existing job.
+  createJobRecord: (jobId: JobId, scheduledAt: Timestamp) -> (Result_19);
+  /// Admin: mark a quote as declined by the customer.
+  declineQuote: (id: JobId) -> (Result);
+  /// Guest: decline the quote attached to a job request from the emailed quote
+  /// link. Marks the quote declined, matching the existing decline flow.
+  declineQuoteByReference: (referenceCode: ReferenceCode) -> (Result);
+  /// Admin: delete a discount rule.
+  deleteDiscount: (id: DiscountId) -> (Result_18);
+  /// Admin: create or replace a quote from a full professional quote payload,
+  /// including line items, labor and materials charges and optional expiration.
+  /// The subtotal, applicable discount, tax, final total, 10% deposit and
+  /// remaining balance are computed automatically by the pricing engine.
+  editQuote: (id: JobId, input: QuoteInput) -> (Result);
+  execute: (qJson: text) -> (Result__1) query;
+  /// Admin: export all customer records as CSV text.
+  exportCustomersCsv: () -> (text) query;
+  /// Return the backend's behavioral API documentation as Markdown.
+  getApiDoc: () -> (text) query;
+  getCallerUserRole: () -> (UserRole) query;
+  /// Admin: fetch a single customer record.
+  getCustomer: (id: CustomerId) -> (opt CustomerView) query;
+  /// Customer: read their own thread using their job reference code. Only
+  /// messages belonging to the resolved customer are returned.
+  getCustomerMessages: (referenceCode: text) -> (vec MessageView) query;
+  /// Admin: fetch a customer's full profile with service history, deposits,
+  /// appointments, notes and uploaded photo ids.
+  getCustomerProfile: (id: CustomerId) -> (opt CustomerProfileView) query;
+  /// Admin: read the newest-first visit history for a job request's customer.
+  getCustomerVisitHistory: (id: JobId) -> (vec VisitRecord) query;
+  /// Admin: read dashboard statistics.
+  getDashboardStats: () -> (DashboardStats) query;
+  /// Admin: read the configured public frontend origin used to build absolute
+  /// links in customer emails. An empty string means "not configured".
+  getFrontendOrigin: () -> (text) query;
+  /// Admin: read a single job record.
+  getJobRecord: (id: JobRecordId) -> (opt JobRecordView) query;
+  /// Admin: read the current owner alert email address.
+  getOwnerAlertEmail: () -> (text) query;
+  /// Admin: read the current owner alert phone number.
+  getOwnerAlertPhone: () -> (text) query;
+  /// Admin: read the payment history for a job request.
+  getPaymentHistoryForJob: (jobId: JobId) -> (opt PaymentHistory) query;
+  /// Guest: read the customer-facing payment summary for a reference code. This
+  /// is the payment page: original amount, discount, final quote, 10% deposit
+  /// required, remaining balance, accepted payment methods and the current
+  /// deposit and appointment state.
+  getPaymentSummary: (referenceCode: ReferenceCode) ->
+   (opt PaymentSummaryView) query;
+  /// Guest: read the customer-facing quote for a job by its public reference
+  /// code. This is the view the emailed quote link opens; it shows the same
+  /// itemized quote the Track page shows and marks an expired quote as expired.
+  getQuoteByReference: (referenceCode: ReferenceCode) ->
+   (opt QuoteView) query;
+  /// Admin: fetch a single job request by id.
+  getRequest: (id: JobId) -> (opt JobRequestView) query;
+  /// Guest: fetch a job request by its public reference code.
+  getRequestByReference: (referenceCode: ReferenceCode) ->
+   (opt JobRequestView) query;
+  /// Admin: read the complete settings bundle.
+  getSettings: () -> (SettingsBundle) query;
+  /// Guest: read the status of a Stripe checkout session.
+  getStripeSessionStatus: (sessionId: text) -> (StripeSessionStatus);
+  /// Admin: read whether the Twilio messaging credential is configured and
+  /// which sending number it uses.
+  getTwilioConfigStatus: () -> (TwilioConfigStatus) query;
+  /// Admin: count the notifications that have not been reviewed yet.
+  getUnreadNotificationCount: () -> (nat) query;
+  /// Guest: read the newest-first visit history for a reference code.
+  getVisitHistory: (referenceCode: ReferenceCode) -> (vec VisitRecord) query;
+  isCallerAdmin: () -> (bool) query;
+  /// Whether Stripe checkout is configured for deposit payments.
+  isStripeConfigured: () -> (bool) query;
+  /// Admin: list all bees.
+  listBees: () -> (vec BeeView) query;
+  /// Admin: list a customer's message thread newest first.
+  listCustomerMessages: (customerId: CustomerId) -> (vec MessageView) query;
+  /// Admin: list customers, optionally including archived records.
+  listCustomers: (includeArchived: bool) -> (vec CustomerSummary) query;
+  /// Admin: list every saved discount rule, newest first.
+  listDiscounts: () -> (vec DiscountRule) query;
+  /// Admin: list every job created from a confirmed request or quote, newest
+  /// first.
+  listJobRecords: () -> (vec JobRecordView) query;
+  /// Admin: list every notification newest first.
+  listNotifications: () -> (vec NotificationView) query;
+  /// Admin: list every permanent payment-history entry, newest first.
+  listPaymentHistory: () -> (vec PaymentHistory) query;
+  /// Admin: list all job requests.
+  listRequests: () -> (vec JobRequestView) query;
+  /// Admin: mark every notification read.
+  markAllNotificationsRead: () -> ();
+  /// Admin: mark a single notification read.
+  markNotificationRead: (id: NotificationId) -> (Result_17);
+  /// Admin: post a reply into a customer's thread.
+  postAdminMessage: (customerId: CustomerId, jobId: opt JobId, body: 
+   text) -> (Result_16);
+  /// Customer: post a message using their job reference code. The customer is
+  /// resolved from the job, so a caller can only ever write to their own thread.
+  postCustomerMessage: (referenceCode: text, body: text) -> (Result_16);
+  /// Raise an admin dashboard notification for one of the tracked triggers.
+  /// The job and deposit flows call this helper directly.
+  raiseNotification: (kind: NotificationKind, title: text, body: text,
+   relatedJobId: opt JobId, relatedCustomerId: opt CustomerId) ->
+   (NotificationId);
+  /// Guest: record a deposit payment for an accepted quote.
+  recordDeposit: (referenceCode: ReferenceCode, method: PaymentMethod) ->
+   (Result);
+  /// Admin: record the final payment for a job and update its permanent payment
+  /// history. The total paid becomes the verified deposit plus the final
+  /// payment.
+  recordFinalPayment: (jobId: JobId, amount: nat, method: PaymentMethod) ->
+   (Result_15);
+  /// Admin: mark a submitted deposit not received. The deposit returns to
+  /// rejected so the customer can resubmit it.
+  rejectDeposit: (referenceCode: ReferenceCode) -> (Result);
+  /// Resolve an existing customer by normalized email first, then phone, or
+  /// create a new permanent record. Returns the customer id. Used by the job
+  /// flow so a returning customer is matched and reused rather than duplicated.
+  resolveOrCreateCustomer: (fullName: text, email: text, phone: text,
+   serviceAddress: text) -> (CustomerId);
+  /// Admin: restore an archived customer to active.
+  restoreCustomer: (id: CustomerId) -> (Result_2);
+  /// Admin: schedule an appointment for a job request. Notifies BOTH the
+  /// customer and the owner.
+  scheduleAppointment: (id: JobId, scheduledAt: Timestamp) -> (Result);
+  schema: () -> (text) query;
+  /// Admin: search the customer directory by name, phone, email, customer id
+  /// or service address.
+  searchCustomers: (term: text) -> (vec CustomerSummary) query;
+  /// Admin: raise an appointment-reminder notification for a scheduled job.
+  /// Respects the appointment-reminders setting.
+  sendAppointmentReminder: (jobId: JobId) -> (Result);
+  /// Admin: mark a quote as sent to the customer and email the itemized quote
+  /// to the customer's address on the request. The email carries the quote
+  /// number, work description, line items, labor, materials, subtotal,
+  /// own-parts discount, total, deposit required, remaining balance, expiration
+  /// date, the owner's note, and absolute accept/decline links that open the
+  /// customer's quote from any email client. The result reports the email
+  /// delivery outcome per channel so the
+  /// owner can be told whether the email was sent; a delivery failure is
+  /// surfaced rather than swallowed. Saving or editing a quote never emails.
+  sendQuote: (id: JobId) -> (Result_14);
+  /// Admin: send a sample alert to both the saved email and the saved phone,
+  /// reporting the outcome of each channel separately.
+  sendTestAlert: () -> (TestAlertResult);
+  /// Admin: update the notification and workflow toggles.
+  setAdminSettings: (settings: AdminSettings) -> (Result_13);
+  /// Admin: update the business identity.
+  setBusinessSettings: (setting: BusinessSettings) -> (Result_12);
+  /// Admin: change a customer's lifecycle status.
+  setCustomerStatus: (id: CustomerId, status: CustomerStatus) -> (Result_2);
+  /// Admin: update the deposit setting. The deposit percentage must be between
+  /// 1 and 100.
+  setDepositSetting: (setting: DepositSetting) -> (Result_11);
+  /// Admin: turn a discount rule on or off.
+  setDiscountActive: (id: DiscountId, active: bool) -> (Result_1);
+  /// Admin: validate and persist the public frontend origin used to build
+  /// absolute links in customer emails. The value must be an absolute http(s)
+  /// URL with no trailing slash; an empty string clears it and restores the
+  /// backend's default origin.
+  setFrontendOrigin: (origin: text) -> (Result_10);
+  /// Admin: validate and persist a new owner alert email address.
+  setOwnerAlertEmail: (address: text) -> (Result_9);
+  /// Admin: validate and persist a new owner alert phone number, normalized
+  /// to E.164.
+  setOwnerAlertPhone: (number: text) -> (Result_8);
+  /// Admin: mark a job request's customer as being on the monthly package.
+  setPackageEnrollment: (id: JobId, active: bool) -> (Result_7);
+  /// Admin: update the accepted payment methods and the owner's payment handles.
+  setPaymentSettings: (settings: PaymentSettings) -> (Result_6);
+  /// Admin: set the quote amount and note for a job request. The amount becomes
+  /// a single line item and the automatic pricing breakdown (discount, tax,
+  /// final total, 10% deposit and remaining balance) is computed from the saved
+  /// discount rules and settings.
+  setQuote: (id: JobId, amount: nat, note: text) -> (Result);
+  /// Admin: update the quote defaults.
+  setQuoteSettings: (setting: QuoteSettings) -> (Result_5);
+  /// Admin: store the Stripe secret key and allowed countries.
+  setStripeConfiguration: (config: StripeConfiguration) -> ();
+  /// Admin: update the tax setting.
+  setTaxSetting: (setting: TaxSetting) -> (Result_4);
+  /// Admin: store the Twilio messaging credential. The secret is held by the
+  /// canister only and never returned to the frontend.
+  setTwilioCredentials: (accountSid: text, keySid: text, keySecret: text,
+   fromNumber: text) -> ();
+  /// Guest: submit a deposit for a quote with the chosen payment method. The
+  /// deposit becomes submitted and awaits owner verification; it is not paid
+  /// until the owner confirms it.
+  submitDeposit: (referenceCode: ReferenceCode, method: PaymentMethod) ->
+   (Result);
+  /// Guest: submit a new job request and receive its public reference code.
+  submitRequest: (input: JobRequestInput) -> (ReferenceCode);
+  /// Guest: submit a review for a completed job.
+  submitReview: (referenceCode: ReferenceCode, rating: nat, comment: 
+   text) -> (Result);
+  /// HTTP outcall transform required by the Stripe client.
+  transform: (input: TransformationInput) -> (TransformationOutput) query;
+  /// Admin: update a bee's name and specialty.
+  updateBee: (id: BeeId, input: BeeInput) -> (Result_3);
+  /// Admin: update a customer's contact fields and preferred contact method.
+  updateCustomer: (id: CustomerId, input: CustomerInput) -> (Result_2);
+  /// Admin: update an existing discount rule.
+  updateDiscount: (id: DiscountId, input: DiscountRuleInput) -> (Result_1);
+  /// Admin: confirm a submitted deposit. The deposit becomes paid and verified,
+  /// the request is confirmed and the calendar appointment is booked.
+  verifyDeposit: (referenceCode: ReferenceCode) -> (Result);
+}

@@ -40,12 +40,13 @@ export const Error = IDL.Variant({
     'expected' : IDL.Vec(IDL.Text),
   }),
 });
-export const Result_4 = IDL.Variant({ 'ok' : IDL.Null, 'err' : Error });
+export const Result_21 = IDL.Variant({ 'ok' : IDL.Null, 'err' : Error });
 export const ReferenceCode = IDL.Text;
 export const JobId = IDL.Nat;
 export const JobStatus = IDL.Variant({
   'scheduled' : IDL.Null,
   'requested' : IDL.Null,
+  'cancelled' : IDL.Null,
   'completed' : IDL.Null,
   'quoted' : IDL.Null,
   'inProgress' : IDL.Null,
@@ -66,23 +67,76 @@ export const Appointment = IDL.Record({
   'confirmed' : IDL.Bool,
   'scheduledAt' : Timestamp,
 });
+export const QuoteStatus = IDL.Variant({
+  'sent' : IDL.Null,
+  'approved' : IDL.Null,
+  'declined' : IDL.Null,
+  'draft' : IDL.Null,
+});
+export const QuoteLineItem = IDL.Record({
+  'description' : IDL.Text,
+  'quantity' : IDL.Nat,
+  'unitPrice' : IDL.Nat,
+});
+export const DiscountId = IDL.Nat;
+export const DiscountApplication = IDL.Record({
+  'ruleName' : IDL.Text,
+  'ruleId' : IDL.Opt(DiscountId),
+  'applied' : IDL.Bool,
+  'reason' : IDL.Text,
+});
+export const QuotePricing = IDL.Record({
+  'depositAmount' : IDL.Nat,
+  'adjustedSubtotal' : IDL.Nat,
+  'discountAmount' : IDL.Nat,
+  'finalTotal' : IDL.Nat,
+  'remainingBalance' : IDL.Nat,
+  'originalSubtotal' : IDL.Nat,
+  'discount' : DiscountApplication,
+  'taxAmount' : IDL.Nat,
+});
 export const Quote = IDL.Record({
+  'status' : QuoteStatus,
+  'lineItems' : IDL.Vec(QuoteLineItem),
+  'total' : IDL.Nat,
+  'expiresAt' : IDL.Opt(Timestamp),
+  'laborCharge' : IDL.Nat,
   'discountApplied' : IDL.Bool,
   'discountAmount' : IDL.Nat,
   'note' : IDL.Text,
+  'createdAt' : Timestamp,
+  'quoteNumber' : IDL.Text,
   'sentAt' : Timestamp,
+  'workDescription' : IDL.Text,
+  'pricing' : IDL.Opt(QuotePricing),
+  'remainingBalance' : IDL.Nat,
+  'materialsCharge' : IDL.Nat,
   'amount' : IDL.Nat,
+  'depositRequired' : IDL.Nat,
+  'subtotal' : IDL.Nat,
 });
 export const PhotoId = IDL.Text;
+export const DepositStatus = IDL.Variant({
+  'verified' : IDL.Null,
+  'submitted' : IDL.Null,
+  'pending' : IDL.Null,
+  'rejected' : IDL.Null,
+});
 export const PaymentMethod = IDL.Variant({
   'stripe' : IDL.Null,
+  'venmo' : IDL.Null,
+  'chime' : IDL.Null,
   'cashApp' : IDL.Null,
+  'payPal' : IDL.Null,
 });
 export const Deposit = IDL.Record({
+  'status' : DepositStatus,
   'method' : PaymentMethod,
   'paid' : IDL.Bool,
+  'submittedAt' : IDL.Opt(Timestamp),
   'stripeSessionId' : IDL.Opt(IDL.Text),
   'amount' : IDL.Nat,
+  'verifiedAt' : IDL.Opt(Timestamp),
   'paidAt' : IDL.Opt(Timestamp),
 });
 export const ServiceCategory = IDL.Variant({
@@ -124,8 +178,70 @@ export const JobError = IDL.Variant({
   'notAuthorized' : IDL.Null,
   'notFound' : IDL.Null,
 });
-export const Result_1 = IDL.Variant({
-  'ok' : JobRequestView,
+export const Result = IDL.Variant({ 'ok' : JobRequestView, 'err' : JobError });
+export const CustomerId = IDL.Nat;
+export const CustomerStatus = IDL.Variant({
+  'active' : IDL.Null,
+  'inactive' : IDL.Null,
+  'archived' : IDL.Null,
+});
+export const PreferredContact = IDL.Variant({
+  'sms' : IDL.Null,
+  'email' : IDL.Null,
+  'phone' : IDL.Null,
+});
+export const CustomerNote = IDL.Record({
+  'id' : IDL.Nat,
+  'body' : IDL.Text,
+  'createdAt' : Timestamp,
+});
+export const CustomerView = IDL.Record({
+  'id' : CustomerId,
+  'status' : CustomerStatus,
+  'serviceAddress' : IDL.Text,
+  'createdAt' : Timestamp,
+  'fullName' : IDL.Text,
+  'email' : IDL.Text,
+  'preferredContact' : PreferredContact,
+  'notes' : IDL.Vec(CustomerNote),
+  'phone' : IDL.Text,
+  'adminNotes' : IDL.Text,
+});
+export const CustomerError = IDL.Variant({
+  'notAuthorized' : IDL.Null,
+  'invalidInput' : IDL.Text,
+  'notFound' : IDL.Null,
+});
+export const Result_2 = IDL.Variant({
+  'ok' : CustomerView,
+  'err' : CustomerError,
+});
+export const JobRecordId = IDL.Nat;
+export const JobRecordStatus = IDL.Variant({
+  'scheduled' : IDL.Null,
+  'cancelled' : IDL.Null,
+  'completed' : IDL.Null,
+  'inProgress' : IDL.Null,
+});
+export const JobRecordView = IDL.Record({
+  'id' : JobRecordId,
+  'customerName' : IDL.Text,
+  'status' : JobRecordStatus,
+  'completedAt' : IDL.Opt(Timestamp),
+  'serviceAddress' : IDL.Text,
+  'createdAt' : Timestamp,
+  'quote' : IDL.Opt(Quote),
+  'deposit' : IDL.Opt(Deposit),
+  'jobRequestId' : JobId,
+  'pricing' : IDL.Opt(QuotePricing),
+  'referenceCode' : ReferenceCode,
+  'remainingBalance' : IDL.Nat,
+  'category' : ServiceCategory,
+  'customerId' : CustomerId,
+  'scheduledAt' : Timestamp,
+});
+export const Result_19 = IDL.Variant({
+  'ok' : JobRecordView,
   'err' : JobError,
 });
 export const BeeError = IDL.Variant({
@@ -133,7 +249,7 @@ export const BeeError = IDL.Variant({
   'notAuthorized' : IDL.Null,
   'notFound' : IDL.Null,
 });
-export const Result_2 = IDL.Variant({
+export const Result_7 = IDL.Variant({
   'ok' : JobRequestView,
   'err' : BeeError,
 });
@@ -152,7 +268,7 @@ export const BeeView = IDL.Record({
   'createdAt' : Timestamp,
   'specialty' : IDL.Text,
 });
-export const Result = IDL.Variant({ 'ok' : BeeView, 'err' : BeeError });
+export const Result_3 = IDL.Variant({ 'ok' : BeeView, 'err' : BeeError });
 export const ShoppingItem = IDL.Record({
   'productName' : IDL.Text,
   'currency' : IDL.Text,
@@ -160,7 +276,80 @@ export const ShoppingItem = IDL.Record({
   'priceInCents' : IDL.Nat,
   'productDescription' : IDL.Text,
 });
-export const Result_3 = IDL.Variant({ 'ok' : IDL.Text, 'err' : JobError });
+export const CustomerInput = IDL.Record({
+  'serviceAddress' : IDL.Text,
+  'fullName' : IDL.Text,
+  'email' : IDL.Text,
+  'preferredContact' : PreferredContact,
+  'phone' : IDL.Text,
+});
+export const Result_20 = IDL.Variant({ 'ok' : IDL.Text, 'err' : JobError });
+export const DiscountKind = IDL.Variant({
+  'fixed' : IDL.Null,
+  'percentage' : IDL.Null,
+});
+export const DiscountEligibility = IDL.Variant({
+  'all' : IDL.Null,
+  'returningCustomer' : IDL.Null,
+  'ownParts' : IDL.Null,
+});
+export const DiscountRuleInput = IDL.Record({
+  'active' : IDL.Bool,
+  'minPurchase' : IDL.Nat,
+  'maxDiscount' : IDL.Nat,
+  'value' : IDL.Nat,
+  'startAt' : IDL.Opt(Timestamp),
+  'kind' : DiscountKind,
+  'name' : IDL.Text,
+  'endAt' : IDL.Opt(Timestamp),
+  'eligibility' : DiscountEligibility,
+});
+export const DiscountRule = IDL.Record({
+  'id' : DiscountId,
+  'active' : IDL.Bool,
+  'minPurchase' : IDL.Nat,
+  'maxDiscount' : IDL.Nat,
+  'value' : IDL.Nat,
+  'startAt' : IDL.Opt(Timestamp),
+  'kind' : DiscountKind,
+  'name' : IDL.Text,
+  'createdAt' : Timestamp,
+  'endAt' : IDL.Opt(Timestamp),
+  'eligibility' : DiscountEligibility,
+});
+export const SettingsError = IDL.Variant({
+  'notAuthorized' : IDL.Null,
+  'invalidInput' : IDL.Text,
+  'notFound' : IDL.Null,
+});
+export const Result_1 = IDL.Variant({
+  'ok' : DiscountRule,
+  'err' : SettingsError,
+});
+export const JobRequestInput = IDL.Record({
+  'customerName' : IDL.Text,
+  'preferredTiming' : IDL.Text,
+  'description' : IDL.Text,
+  'photoIds' : IDL.Vec(PhotoId),
+  'ownParts' : IDL.Bool,
+  'email' : IDL.Text,
+  'category' : ServiceCategory,
+  'phone' : IDL.Text,
+  'packageInterest' : IDL.Bool,
+});
+export const Result_18 = IDL.Variant({
+  'ok' : IDL.Null,
+  'err' : SettingsError,
+});
+export const QuoteInput = IDL.Record({
+  'lineItems' : IDL.Vec(QuoteLineItem),
+  'expiresAt' : IDL.Opt(Timestamp),
+  'laborCharge' : IDL.Nat,
+  'note' : IDL.Text,
+  'workDescription' : IDL.Text,
+  'materialsCharge' : IDL.Nat,
+  'depositRequired' : IDL.Nat,
+});
 export const Value = IDL.Variant({
   'int' : IDL.Int,
   'nat' : IDL.Nat,
@@ -173,6 +362,55 @@ export const Cell = IDL.Record({ 'value' : Value, 'name' : IDL.Text });
 export const Result__1 = IDL.Record({
   'hasMore' : IDL.Bool,
   'rows' : IDL.Vec(IDL.Vec(Cell)),
+});
+export const MessageId = IDL.Nat;
+export const MessageView = IDL.Record({
+  'id' : MessageId,
+  'body' : IDL.Text,
+  'createdAt' : Timestamp,
+  'jobId' : IDL.Opt(JobId),
+  'customerId' : CustomerId,
+  'fromAdmin' : IDL.Bool,
+});
+export const PaymentId = IDL.Nat;
+export const PaymentHistory = IDL.Record({
+  'id' : PaymentId,
+  'depositAmount' : IDL.Nat,
+  'paymentMethod' : PaymentMethod,
+  'depositStatus' : DepositStatus,
+  'discountAmount' : IDL.Nat,
+  'createdAt' : Timestamp,
+  'totalPaid' : IDL.Nat,
+  'jobRequestId' : JobId,
+  'finalPayment' : IDL.Nat,
+  'referenceCode' : ReferenceCode,
+  'updatedAt' : Timestamp,
+  'finalQuote' : IDL.Nat,
+  'remainingBalance' : IDL.Nat,
+  'customerId' : CustomerId,
+  'originalQuote' : IDL.Nat,
+});
+export const MessageView__1 = IDL.Record({
+  'id' : IDL.Nat,
+  'body' : IDL.Text,
+  'createdAt' : Timestamp,
+  'jobId' : IDL.Opt(JobId),
+  'customerId' : CustomerId,
+  'fromAdmin' : IDL.Bool,
+});
+export const CustomerProfileView = IDL.Record({
+  'completedJobs' : IDL.Vec(JobRequestView),
+  'payments' : IDL.Vec(PaymentHistory),
+  'customer' : CustomerView,
+  'messages' : IDL.Vec(MessageView__1),
+  'jobs' : IDL.Vec(JobRequestView),
+  'photoIds' : IDL.Vec(PhotoId),
+  'appointments' : IDL.Vec(Appointment),
+  'cancelledJobs' : IDL.Vec(JobRequestView),
+  'deposits' : IDL.Vec(Deposit),
+  'pendingJobs' : IDL.Vec(JobRequestView),
+  'quotes' : IDL.Vec(Quote),
+  'jobRecords' : IDL.Vec(JobRecordView),
 });
 export const VisitRecord = IDL.Record({
   'service' : ServiceCategory,
@@ -189,6 +427,84 @@ export const DashboardStats = IDL.Record({
   'upcomingAppointments' : IDL.Nat,
   'activeJobs' : IDL.Nat,
 });
+export const PaymentSummaryView = IDL.Record({
+  'customerName' : IDL.Text,
+  'depositAmount' : IDL.Nat,
+  'chimeHandle' : IDL.Text,
+  'adjustedSubtotal' : IDL.Nat,
+  'venmoHandle' : IDL.Text,
+  'depositStatus' : DepositStatus,
+  'depositMethod' : IDL.Opt(PaymentMethod),
+  'discountAmount' : IDL.Nat,
+  'finalTotal' : IDL.Nat,
+  'appointmentConfirmed' : IDL.Bool,
+  'serviceDescription' : IDL.Text,
+  'discountReason' : IDL.Text,
+  'referenceCode' : ReferenceCode,
+  'payPalHandle' : IDL.Text,
+  'cashAppHandle' : IDL.Text,
+  'remainingBalance' : IDL.Nat,
+  'originalSubtotal' : IDL.Nat,
+  'acceptedMethods' : IDL.Vec(PaymentMethod),
+  'taxAmount' : IDL.Nat,
+  'appointmentAt' : IDL.Opt(Timestamp),
+});
+export const QuoteView = IDL.Record({
+  'status' : QuoteStatus,
+  'lineItems' : IDL.Vec(QuoteLineItem),
+  'total' : IDL.Nat,
+  'expiresAt' : IDL.Opt(Timestamp),
+  'expired' : IDL.Bool,
+  'laborCharge' : IDL.Nat,
+  'discountApplied' : IDL.Bool,
+  'discountAmount' : IDL.Nat,
+  'note' : IDL.Text,
+  'quoteNumber' : IDL.Text,
+  'workDescription' : IDL.Text,
+  'pricing' : IDL.Opt(QuotePricing),
+  'referenceCode' : ReferenceCode,
+  'remainingBalance' : IDL.Nat,
+  'materialsCharge' : IDL.Nat,
+  'depositRequired' : IDL.Nat,
+  'subtotal' : IDL.Nat,
+});
+export const TaxSetting = IDL.Record({
+  'enabled' : IDL.Bool,
+  'ratePercent' : IDL.Nat,
+});
+export const AdminSettings = IDL.Record({
+  'appointmentReminders' : IDL.Bool,
+  'notificationSound' : IDL.Bool,
+  'messageAlerts' : IDL.Bool,
+  'pushNotifications' : IDL.Bool,
+  'customerRequestAlerts' : IDL.Bool,
+});
+export const QuoteSettings = IDL.Record({
+  'terms' : IDL.Text,
+  'validityDays' : IDL.Nat,
+});
+export const DepositSetting = IDL.Record({ 'percent' : IDL.Nat });
+export const BusinessSettings = IDL.Record({
+  'businessName' : IDL.Text,
+  'businessEmail' : IDL.Text,
+  'businessAddress' : IDL.Text,
+  'businessPhone' : IDL.Text,
+});
+export const PaymentSettings = IDL.Record({
+  'chimeHandle' : IDL.Text,
+  'venmoHandle' : IDL.Text,
+  'payPalHandle' : IDL.Text,
+  'cashAppHandle' : IDL.Text,
+  'acceptedMethods' : IDL.Vec(PaymentMethod),
+});
+export const SettingsBundle = IDL.Record({
+  'tax' : TaxSetting,
+  'admin' : AdminSettings,
+  'quote' : QuoteSettings,
+  'deposit' : DepositSetting,
+  'business' : BusinessSettings,
+  'payment' : PaymentSettings,
+});
 export const StripeSessionStatus = IDL.Variant({
   'completed' : IDL.Record({
     'userPrincipal' : IDL.Opt(IDL.Text),
@@ -196,20 +512,136 @@ export const StripeSessionStatus = IDL.Variant({
   }),
   'failed' : IDL.Record({ 'error' : IDL.Text }),
 });
+export const TwilioConfigStatus = IDL.Record({
+  'configured' : IDL.Bool,
+  'fromNumber' : IDL.Text,
+});
+export const CustomerSummary = IDL.Record({
+  'id' : CustomerId,
+  'status' : CustomerStatus,
+  'serviceAddress' : IDL.Text,
+  'fullName' : IDL.Text,
+  'email' : IDL.Text,
+  'phone' : IDL.Text,
+  'jobCount' : IDL.Nat,
+});
+export const NotificationId = IDL.Nat;
+export const NotificationKind = IDL.Variant({
+  'appointmentReminder' : IDL.Null,
+  'depositReceived' : IDL.Null,
+  'returningCustomerRequest' : IDL.Null,
+  'depositVerified' : IDL.Null,
+  'depositSubmitted' : IDL.Null,
+  'appointmentConfirmed' : IDL.Null,
+  'newCustomer' : IDL.Null,
+  'quoteApproved' : IDL.Null,
+  'newRequest' : IDL.Null,
+  'appointmentChanged' : IDL.Null,
+  'customerMessage' : IDL.Null,
+  'paymentReceived' : IDL.Null,
+  'quoteDeclined' : IDL.Null,
+  'newMessage' : IDL.Null,
+  'bookingApproval' : IDL.Null,
+});
+export const NotificationView = IDL.Record({
+  'id' : NotificationId,
+  'title' : IDL.Text,
+  'relatedCustomerId' : IDL.Opt(CustomerId),
+  'body' : IDL.Text,
+  'kind' : NotificationKind,
+  'createdAt' : Timestamp,
+  'read' : IDL.Bool,
+  'relatedJobId' : IDL.Opt(JobId),
+});
+export const NotificationError = IDL.Variant({
+  'notAuthorized' : IDL.Null,
+  'notFound' : IDL.Null,
+});
+export const Result_17 = IDL.Variant({
+  'ok' : IDL.Null,
+  'err' : NotificationError,
+});
+export const MessageError = IDL.Variant({
+  'notAuthorized' : IDL.Null,
+  'invalidInput' : IDL.Text,
+  'notFound' : IDL.Null,
+});
+export const Result_16 = IDL.Variant({
+  'ok' : MessageView,
+  'err' : MessageError,
+});
+export const Result_15 = IDL.Variant({
+  'ok' : PaymentHistory,
+  'err' : JobError,
+});
+export const QuoteEmailResult = IDL.Variant({
+  'sent' : IDL.Null,
+  'failed' : IDL.Text,
+});
+export const QuoteSendResult = IDL.Record({
+  'view' : JobRequestView,
+  'email' : QuoteEmailResult,
+});
+export const Result_14 = IDL.Variant({
+  'ok' : QuoteSendResult,
+  'err' : JobError,
+});
+export const ChannelResult = IDL.Variant({
+  'sent' : IDL.Null,
+  'failed' : IDL.Text,
+});
+export const TestAlertResult = IDL.Record({
+  'sms' : ChannelResult,
+  'email' : ChannelResult,
+});
+export const Result_13 = IDL.Variant({
+  'ok' : AdminSettings,
+  'err' : SettingsError,
+});
+export const Result_12 = IDL.Variant({
+  'ok' : BusinessSettings,
+  'err' : SettingsError,
+});
+export const Result_11 = IDL.Variant({
+  'ok' : DepositSetting,
+  'err' : SettingsError,
+});
+export const FrontendOriginError = IDL.Variant({ 'invalidOrigin' : IDL.Text });
+export const Result_10 = IDL.Variant({
+  'ok' : IDL.Text,
+  'err' : FrontendOriginError,
+});
+export const OwnerAlertError = IDL.Variant({
+  'invalidEmail' : IDL.Text,
+  'sendFailed' : IDL.Text,
+});
+export const Result_9 = IDL.Variant({
+  'ok' : IDL.Text,
+  'err' : OwnerAlertError,
+});
+export const OwnerAlertPhoneError = IDL.Variant({
+  'invalidPhone' : IDL.Text,
+  'sendFailed' : IDL.Text,
+});
+export const Result_8 = IDL.Variant({
+  'ok' : IDL.Text,
+  'err' : OwnerAlertPhoneError,
+});
+export const Result_6 = IDL.Variant({
+  'ok' : PaymentSettings,
+  'err' : SettingsError,
+});
+export const Result_5 = IDL.Variant({
+  'ok' : QuoteSettings,
+  'err' : SettingsError,
+});
 export const StripeConfiguration = IDL.Record({
   'allowedCountries' : IDL.Vec(IDL.Text),
   'secretKey' : IDL.Text,
 });
-export const JobRequestInput = IDL.Record({
-  'customerName' : IDL.Text,
-  'preferredTiming' : IDL.Text,
-  'description' : IDL.Text,
-  'photoIds' : IDL.Vec(PhotoId),
-  'ownParts' : IDL.Bool,
-  'email' : IDL.Text,
-  'category' : ServiceCategory,
-  'phone' : IDL.Text,
-  'packageInterest' : IDL.Bool,
+export const Result_4 = IDL.Variant({
+  'ok' : TaxSetting,
+  'err' : SettingsError,
 });
 export const HttpHeader = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
 export const HttpRequestResult = IDL.Record({
@@ -255,41 +687,95 @@ export const idlService = IDL.Service({
     ),
   '_immutableObjectStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
   '_initialize_access_control' : IDL.Func([], [], []),
-  '_internet_identity_sign_in_finish' : IDL.Func([], [Result_4], []),
+  '_internet_identity_sign_in_finish' : IDL.Func([], [Result_21], []),
   '_internet_identity_sign_in_start' : IDL.Func([], [IDL.Vec(IDL.Nat8)], []),
-  'acceptQuote' : IDL.Func([ReferenceCode], [Result_1], []),
-  'advanceStatus' : IDL.Func([JobId], [Result_1], []),
-  'assignBeeToJob' : IDL.Func([JobId, BeeId], [Result_2], []),
+  'acceptQuote' : IDL.Func([ReferenceCode], [Result], []),
+  'addCustomerNote' : IDL.Func([CustomerId, IDL.Text], [Result_2], []),
+  'advanceJobRecord' : IDL.Func([JobRecordId], [Result_19], []),
+  'advanceStatus' : IDL.Func([JobId], [Result], []),
+  'approveQuote' : IDL.Func([JobId], [Result], []),
+  'archiveCustomer' : IDL.Func([CustomerId], [Result_2], []),
+  'assignBeeToJob' : IDL.Func([JobId, BeeId], [Result_7], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-  'confirmAppointment' : IDL.Func([ReferenceCode], [Result_1], []),
-  'confirmDepositPayment' : IDL.Func([ReferenceCode], [Result_1], []),
-  'createBee' : IDL.Func([BeeInput], [Result], []),
+  'cancelJob' : IDL.Func([JobId], [Result], []),
+  'cancelJobRecord' : IDL.Func([JobRecordId], [Result_19], []),
+  'completeJobRecord' : IDL.Func([JobRecordId], [Result_19], []),
+  'confirmAppointment' : IDL.Func([ReferenceCode], [Result], []),
+  'confirmDepositPayment' : IDL.Func([ReferenceCode], [Result], []),
+  'convertQuoteToJob' : IDL.Func([JobId, Timestamp], [Result], []),
+  'createBee' : IDL.Func([BeeInput], [Result_3], []),
   'createCheckoutSession' : IDL.Func(
       [IDL.Vec(ShoppingItem), IDL.Text, IDL.Text],
       [IDL.Text],
       [],
     ),
+  'createCustomer' : IDL.Func([CustomerInput], [Result_2], []),
   'createDepositCheckoutSession' : IDL.Func(
       [ReferenceCode, IDL.Text, IDL.Text],
-      [Result_3],
+      [Result_20],
       [],
     ),
+  'createDiscount' : IDL.Func([DiscountRuleInput], [Result_1], []),
+  'createJobForCustomer' : IDL.Func(
+      [CustomerId, JobRequestInput],
+      [Result],
+      [],
+    ),
+  'createJobRecord' : IDL.Func([JobId, Timestamp], [Result_19], []),
+  'declineQuote' : IDL.Func([JobId], [Result], []),
+  'declineQuoteByReference' : IDL.Func([ReferenceCode], [Result], []),
+  'deleteDiscount' : IDL.Func([DiscountId], [Result_18], []),
+  'editQuote' : IDL.Func([JobId, QuoteInput], [Result], []),
   'execute' : IDL.Func([IDL.Text], [Result__1], ['query']),
+  'exportCustomersCsv' : IDL.Func([], [IDL.Text], ['query']),
   'getApiDoc' : IDL.Func([], [IDL.Text], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getCustomer' : IDL.Func([CustomerId], [IDL.Opt(CustomerView)], ['query']),
+  'getCustomerMessages' : IDL.Func(
+      [IDL.Text],
+      [IDL.Vec(MessageView)],
+      ['query'],
+    ),
+  'getCustomerProfile' : IDL.Func(
+      [CustomerId],
+      [IDL.Opt(CustomerProfileView)],
+      ['query'],
+    ),
   'getCustomerVisitHistory' : IDL.Func(
       [JobId],
       [IDL.Vec(VisitRecord)],
       ['query'],
     ),
   'getDashboardStats' : IDL.Func([], [DashboardStats], ['query']),
+  'getFrontendOrigin' : IDL.Func([], [IDL.Text], ['query']),
+  'getJobRecord' : IDL.Func([JobRecordId], [IDL.Opt(JobRecordView)], ['query']),
+  'getOwnerAlertEmail' : IDL.Func([], [IDL.Text], ['query']),
+  'getOwnerAlertPhone' : IDL.Func([], [IDL.Text], ['query']),
+  'getPaymentHistoryForJob' : IDL.Func(
+      [JobId],
+      [IDL.Opt(PaymentHistory)],
+      ['query'],
+    ),
+  'getPaymentSummary' : IDL.Func(
+      [ReferenceCode],
+      [IDL.Opt(PaymentSummaryView)],
+      ['query'],
+    ),
+  'getQuoteByReference' : IDL.Func(
+      [ReferenceCode],
+      [IDL.Opt(QuoteView)],
+      ['query'],
+    ),
   'getRequest' : IDL.Func([JobId], [IDL.Opt(JobRequestView)], ['query']),
   'getRequestByReference' : IDL.Func(
       [ReferenceCode],
       [IDL.Opt(JobRequestView)],
       ['query'],
     ),
+  'getSettings' : IDL.Func([], [SettingsBundle], ['query']),
   'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+  'getTwilioConfigStatus' : IDL.Func([], [TwilioConfigStatus], ['query']),
+  'getUnreadNotificationCount' : IDL.Func([], [IDL.Nat], ['query']),
   'getVisitHistory' : IDL.Func(
       [ReferenceCode],
       [IDL.Vec(VisitRecord)],
@@ -298,21 +784,90 @@ export const idlService = IDL.Service({
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
   'listBees' : IDL.Func([], [IDL.Vec(BeeView)], ['query']),
+  'listCustomerMessages' : IDL.Func(
+      [CustomerId],
+      [IDL.Vec(MessageView)],
+      ['query'],
+    ),
+  'listCustomers' : IDL.Func([IDL.Bool], [IDL.Vec(CustomerSummary)], ['query']),
+  'listDiscounts' : IDL.Func([], [IDL.Vec(DiscountRule)], ['query']),
+  'listJobRecords' : IDL.Func([], [IDL.Vec(JobRecordView)], ['query']),
+  'listNotifications' : IDL.Func([], [IDL.Vec(NotificationView)], ['query']),
+  'listPaymentHistory' : IDL.Func([], [IDL.Vec(PaymentHistory)], ['query']),
   'listRequests' : IDL.Func([], [IDL.Vec(JobRequestView)], ['query']),
-  'recordDeposit' : IDL.Func([ReferenceCode, PaymentMethod], [Result_1], []),
-  'scheduleAppointment' : IDL.Func([JobId, Timestamp], [Result_1], []),
+  'markAllNotificationsRead' : IDL.Func([], [], []),
+  'markNotificationRead' : IDL.Func([NotificationId], [Result_17], []),
+  'postAdminMessage' : IDL.Func(
+      [CustomerId, IDL.Opt(JobId), IDL.Text],
+      [Result_16],
+      [],
+    ),
+  'postCustomerMessage' : IDL.Func([IDL.Text, IDL.Text], [Result_16], []),
+  'raiseNotification' : IDL.Func(
+      [
+        NotificationKind,
+        IDL.Text,
+        IDL.Text,
+        IDL.Opt(JobId),
+        IDL.Opt(CustomerId),
+      ],
+      [NotificationId],
+      [],
+    ),
+  'recordDeposit' : IDL.Func([ReferenceCode, PaymentMethod], [Result], []),
+  'recordFinalPayment' : IDL.Func(
+      [JobId, IDL.Nat, PaymentMethod],
+      [Result_15],
+      [],
+    ),
+  'rejectDeposit' : IDL.Func([ReferenceCode], [Result], []),
+  'resolveOrCreateCustomer' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [CustomerId],
+      [],
+    ),
+  'restoreCustomer' : IDL.Func([CustomerId], [Result_2], []),
+  'scheduleAppointment' : IDL.Func([JobId, Timestamp], [Result], []),
   'schema' : IDL.Func([], [IDL.Text], ['query']),
-  'setPackageEnrollment' : IDL.Func([JobId, IDL.Bool], [Result_2], []),
-  'setQuote' : IDL.Func([JobId, IDL.Nat, IDL.Text], [Result_1], []),
+  'searchCustomers' : IDL.Func(
+      [IDL.Text],
+      [IDL.Vec(CustomerSummary)],
+      ['query'],
+    ),
+  'sendAppointmentReminder' : IDL.Func([JobId], [Result], []),
+  'sendQuote' : IDL.Func([JobId], [Result_14], []),
+  'sendTestAlert' : IDL.Func([], [TestAlertResult], []),
+  'setAdminSettings' : IDL.Func([AdminSettings], [Result_13], []),
+  'setBusinessSettings' : IDL.Func([BusinessSettings], [Result_12], []),
+  'setCustomerStatus' : IDL.Func([CustomerId, CustomerStatus], [Result_2], []),
+  'setDepositSetting' : IDL.Func([DepositSetting], [Result_11], []),
+  'setDiscountActive' : IDL.Func([DiscountId, IDL.Bool], [Result_1], []),
+  'setFrontendOrigin' : IDL.Func([IDL.Text], [Result_10], []),
+  'setOwnerAlertEmail' : IDL.Func([IDL.Text], [Result_9], []),
+  'setOwnerAlertPhone' : IDL.Func([IDL.Text], [Result_8], []),
+  'setPackageEnrollment' : IDL.Func([JobId, IDL.Bool], [Result_7], []),
+  'setPaymentSettings' : IDL.Func([PaymentSettings], [Result_6], []),
+  'setQuote' : IDL.Func([JobId, IDL.Nat, IDL.Text], [Result], []),
+  'setQuoteSettings' : IDL.Func([QuoteSettings], [Result_5], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
+  'setTaxSetting' : IDL.Func([TaxSetting], [Result_4], []),
+  'setTwilioCredentials' : IDL.Func(
+      [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+      [],
+      [],
+    ),
+  'submitDeposit' : IDL.Func([ReferenceCode, PaymentMethod], [Result], []),
   'submitRequest' : IDL.Func([JobRequestInput], [ReferenceCode], []),
-  'submitReview' : IDL.Func([ReferenceCode, IDL.Nat, IDL.Text], [Result_1], []),
+  'submitReview' : IDL.Func([ReferenceCode, IDL.Nat, IDL.Text], [Result], []),
   'transform' : IDL.Func(
       [TransformationInput],
       [TransformationOutput],
       ['query'],
     ),
-  'updateBee' : IDL.Func([BeeId, BeeInput], [Result], []),
+  'updateBee' : IDL.Func([BeeId, BeeInput], [Result_3], []),
+  'updateCustomer' : IDL.Func([CustomerId, CustomerInput], [Result_2], []),
+  'updateDiscount' : IDL.Func([DiscountId, DiscountRuleInput], [Result_1], []),
+  'verifyDeposit' : IDL.Func([ReferenceCode], [Result], []),
 });
 
 export const idlInitArgs = [];
@@ -350,12 +905,13 @@ export const idlFactory = ({ IDL }) => {
       'expected' : IDL.Vec(IDL.Text),
     }),
   });
-  const Result_4 = IDL.Variant({ 'ok' : IDL.Null, 'err' : Error });
+  const Result_21 = IDL.Variant({ 'ok' : IDL.Null, 'err' : Error });
   const ReferenceCode = IDL.Text;
   const JobId = IDL.Nat;
   const JobStatus = IDL.Variant({
     'scheduled' : IDL.Null,
     'requested' : IDL.Null,
+    'cancelled' : IDL.Null,
     'completed' : IDL.Null,
     'quoted' : IDL.Null,
     'inProgress' : IDL.Null,
@@ -376,23 +932,76 @@ export const idlFactory = ({ IDL }) => {
     'confirmed' : IDL.Bool,
     'scheduledAt' : Timestamp,
   });
+  const QuoteStatus = IDL.Variant({
+    'sent' : IDL.Null,
+    'approved' : IDL.Null,
+    'declined' : IDL.Null,
+    'draft' : IDL.Null,
+  });
+  const QuoteLineItem = IDL.Record({
+    'description' : IDL.Text,
+    'quantity' : IDL.Nat,
+    'unitPrice' : IDL.Nat,
+  });
+  const DiscountId = IDL.Nat;
+  const DiscountApplication = IDL.Record({
+    'ruleName' : IDL.Text,
+    'ruleId' : IDL.Opt(DiscountId),
+    'applied' : IDL.Bool,
+    'reason' : IDL.Text,
+  });
+  const QuotePricing = IDL.Record({
+    'depositAmount' : IDL.Nat,
+    'adjustedSubtotal' : IDL.Nat,
+    'discountAmount' : IDL.Nat,
+    'finalTotal' : IDL.Nat,
+    'remainingBalance' : IDL.Nat,
+    'originalSubtotal' : IDL.Nat,
+    'discount' : DiscountApplication,
+    'taxAmount' : IDL.Nat,
+  });
   const Quote = IDL.Record({
+    'status' : QuoteStatus,
+    'lineItems' : IDL.Vec(QuoteLineItem),
+    'total' : IDL.Nat,
+    'expiresAt' : IDL.Opt(Timestamp),
+    'laborCharge' : IDL.Nat,
     'discountApplied' : IDL.Bool,
     'discountAmount' : IDL.Nat,
     'note' : IDL.Text,
+    'createdAt' : Timestamp,
+    'quoteNumber' : IDL.Text,
     'sentAt' : Timestamp,
+    'workDescription' : IDL.Text,
+    'pricing' : IDL.Opt(QuotePricing),
+    'remainingBalance' : IDL.Nat,
+    'materialsCharge' : IDL.Nat,
     'amount' : IDL.Nat,
+    'depositRequired' : IDL.Nat,
+    'subtotal' : IDL.Nat,
   });
   const PhotoId = IDL.Text;
+  const DepositStatus = IDL.Variant({
+    'verified' : IDL.Null,
+    'submitted' : IDL.Null,
+    'pending' : IDL.Null,
+    'rejected' : IDL.Null,
+  });
   const PaymentMethod = IDL.Variant({
     'stripe' : IDL.Null,
+    'venmo' : IDL.Null,
+    'chime' : IDL.Null,
     'cashApp' : IDL.Null,
+    'payPal' : IDL.Null,
   });
   const Deposit = IDL.Record({
+    'status' : DepositStatus,
     'method' : PaymentMethod,
     'paid' : IDL.Bool,
+    'submittedAt' : IDL.Opt(Timestamp),
     'stripeSessionId' : IDL.Opt(IDL.Text),
     'amount' : IDL.Nat,
+    'verifiedAt' : IDL.Opt(Timestamp),
     'paidAt' : IDL.Opt(Timestamp),
   });
   const ServiceCategory = IDL.Variant({
@@ -434,13 +1043,72 @@ export const idlFactory = ({ IDL }) => {
     'notAuthorized' : IDL.Null,
     'notFound' : IDL.Null,
   });
-  const Result_1 = IDL.Variant({ 'ok' : JobRequestView, 'err' : JobError });
+  const Result = IDL.Variant({ 'ok' : JobRequestView, 'err' : JobError });
+  const CustomerId = IDL.Nat;
+  const CustomerStatus = IDL.Variant({
+    'active' : IDL.Null,
+    'inactive' : IDL.Null,
+    'archived' : IDL.Null,
+  });
+  const PreferredContact = IDL.Variant({
+    'sms' : IDL.Null,
+    'email' : IDL.Null,
+    'phone' : IDL.Null,
+  });
+  const CustomerNote = IDL.Record({
+    'id' : IDL.Nat,
+    'body' : IDL.Text,
+    'createdAt' : Timestamp,
+  });
+  const CustomerView = IDL.Record({
+    'id' : CustomerId,
+    'status' : CustomerStatus,
+    'serviceAddress' : IDL.Text,
+    'createdAt' : Timestamp,
+    'fullName' : IDL.Text,
+    'email' : IDL.Text,
+    'preferredContact' : PreferredContact,
+    'notes' : IDL.Vec(CustomerNote),
+    'phone' : IDL.Text,
+    'adminNotes' : IDL.Text,
+  });
+  const CustomerError = IDL.Variant({
+    'notAuthorized' : IDL.Null,
+    'invalidInput' : IDL.Text,
+    'notFound' : IDL.Null,
+  });
+  const Result_2 = IDL.Variant({ 'ok' : CustomerView, 'err' : CustomerError });
+  const JobRecordId = IDL.Nat;
+  const JobRecordStatus = IDL.Variant({
+    'scheduled' : IDL.Null,
+    'cancelled' : IDL.Null,
+    'completed' : IDL.Null,
+    'inProgress' : IDL.Null,
+  });
+  const JobRecordView = IDL.Record({
+    'id' : JobRecordId,
+    'customerName' : IDL.Text,
+    'status' : JobRecordStatus,
+    'completedAt' : IDL.Opt(Timestamp),
+    'serviceAddress' : IDL.Text,
+    'createdAt' : Timestamp,
+    'quote' : IDL.Opt(Quote),
+    'deposit' : IDL.Opt(Deposit),
+    'jobRequestId' : JobId,
+    'pricing' : IDL.Opt(QuotePricing),
+    'referenceCode' : ReferenceCode,
+    'remainingBalance' : IDL.Nat,
+    'category' : ServiceCategory,
+    'customerId' : CustomerId,
+    'scheduledAt' : Timestamp,
+  });
+  const Result_19 = IDL.Variant({ 'ok' : JobRecordView, 'err' : JobError });
   const BeeError = IDL.Variant({
     'invalidState' : IDL.Text,
     'notAuthorized' : IDL.Null,
     'notFound' : IDL.Null,
   });
-  const Result_2 = IDL.Variant({ 'ok' : JobRequestView, 'err' : BeeError });
+  const Result_7 = IDL.Variant({ 'ok' : JobRequestView, 'err' : BeeError });
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
     'user' : IDL.Null,
@@ -453,7 +1121,7 @@ export const idlFactory = ({ IDL }) => {
     'createdAt' : Timestamp,
     'specialty' : IDL.Text,
   });
-  const Result = IDL.Variant({ 'ok' : BeeView, 'err' : BeeError });
+  const Result_3 = IDL.Variant({ 'ok' : BeeView, 'err' : BeeError });
   const ShoppingItem = IDL.Record({
     'productName' : IDL.Text,
     'currency' : IDL.Text,
@@ -461,7 +1129,74 @@ export const idlFactory = ({ IDL }) => {
     'priceInCents' : IDL.Nat,
     'productDescription' : IDL.Text,
   });
-  const Result_3 = IDL.Variant({ 'ok' : IDL.Text, 'err' : JobError });
+  const CustomerInput = IDL.Record({
+    'serviceAddress' : IDL.Text,
+    'fullName' : IDL.Text,
+    'email' : IDL.Text,
+    'preferredContact' : PreferredContact,
+    'phone' : IDL.Text,
+  });
+  const Result_20 = IDL.Variant({ 'ok' : IDL.Text, 'err' : JobError });
+  const DiscountKind = IDL.Variant({
+    'fixed' : IDL.Null,
+    'percentage' : IDL.Null,
+  });
+  const DiscountEligibility = IDL.Variant({
+    'all' : IDL.Null,
+    'returningCustomer' : IDL.Null,
+    'ownParts' : IDL.Null,
+  });
+  const DiscountRuleInput = IDL.Record({
+    'active' : IDL.Bool,
+    'minPurchase' : IDL.Nat,
+    'maxDiscount' : IDL.Nat,
+    'value' : IDL.Nat,
+    'startAt' : IDL.Opt(Timestamp),
+    'kind' : DiscountKind,
+    'name' : IDL.Text,
+    'endAt' : IDL.Opt(Timestamp),
+    'eligibility' : DiscountEligibility,
+  });
+  const DiscountRule = IDL.Record({
+    'id' : DiscountId,
+    'active' : IDL.Bool,
+    'minPurchase' : IDL.Nat,
+    'maxDiscount' : IDL.Nat,
+    'value' : IDL.Nat,
+    'startAt' : IDL.Opt(Timestamp),
+    'kind' : DiscountKind,
+    'name' : IDL.Text,
+    'createdAt' : Timestamp,
+    'endAt' : IDL.Opt(Timestamp),
+    'eligibility' : DiscountEligibility,
+  });
+  const SettingsError = IDL.Variant({
+    'notAuthorized' : IDL.Null,
+    'invalidInput' : IDL.Text,
+    'notFound' : IDL.Null,
+  });
+  const Result_1 = IDL.Variant({ 'ok' : DiscountRule, 'err' : SettingsError });
+  const JobRequestInput = IDL.Record({
+    'customerName' : IDL.Text,
+    'preferredTiming' : IDL.Text,
+    'description' : IDL.Text,
+    'photoIds' : IDL.Vec(PhotoId),
+    'ownParts' : IDL.Bool,
+    'email' : IDL.Text,
+    'category' : ServiceCategory,
+    'phone' : IDL.Text,
+    'packageInterest' : IDL.Bool,
+  });
+  const Result_18 = IDL.Variant({ 'ok' : IDL.Null, 'err' : SettingsError });
+  const QuoteInput = IDL.Record({
+    'lineItems' : IDL.Vec(QuoteLineItem),
+    'expiresAt' : IDL.Opt(Timestamp),
+    'laborCharge' : IDL.Nat,
+    'note' : IDL.Text,
+    'workDescription' : IDL.Text,
+    'materialsCharge' : IDL.Nat,
+    'depositRequired' : IDL.Nat,
+  });
   const Value = IDL.Variant({
     'int' : IDL.Int,
     'nat' : IDL.Nat,
@@ -474,6 +1209,55 @@ export const idlFactory = ({ IDL }) => {
   const Result__1 = IDL.Record({
     'hasMore' : IDL.Bool,
     'rows' : IDL.Vec(IDL.Vec(Cell)),
+  });
+  const MessageId = IDL.Nat;
+  const MessageView = IDL.Record({
+    'id' : MessageId,
+    'body' : IDL.Text,
+    'createdAt' : Timestamp,
+    'jobId' : IDL.Opt(JobId),
+    'customerId' : CustomerId,
+    'fromAdmin' : IDL.Bool,
+  });
+  const PaymentId = IDL.Nat;
+  const PaymentHistory = IDL.Record({
+    'id' : PaymentId,
+    'depositAmount' : IDL.Nat,
+    'paymentMethod' : PaymentMethod,
+    'depositStatus' : DepositStatus,
+    'discountAmount' : IDL.Nat,
+    'createdAt' : Timestamp,
+    'totalPaid' : IDL.Nat,
+    'jobRequestId' : JobId,
+    'finalPayment' : IDL.Nat,
+    'referenceCode' : ReferenceCode,
+    'updatedAt' : Timestamp,
+    'finalQuote' : IDL.Nat,
+    'remainingBalance' : IDL.Nat,
+    'customerId' : CustomerId,
+    'originalQuote' : IDL.Nat,
+  });
+  const MessageView__1 = IDL.Record({
+    'id' : IDL.Nat,
+    'body' : IDL.Text,
+    'createdAt' : Timestamp,
+    'jobId' : IDL.Opt(JobId),
+    'customerId' : CustomerId,
+    'fromAdmin' : IDL.Bool,
+  });
+  const CustomerProfileView = IDL.Record({
+    'completedJobs' : IDL.Vec(JobRequestView),
+    'payments' : IDL.Vec(PaymentHistory),
+    'customer' : CustomerView,
+    'messages' : IDL.Vec(MessageView__1),
+    'jobs' : IDL.Vec(JobRequestView),
+    'photoIds' : IDL.Vec(PhotoId),
+    'appointments' : IDL.Vec(Appointment),
+    'cancelledJobs' : IDL.Vec(JobRequestView),
+    'deposits' : IDL.Vec(Deposit),
+    'pendingJobs' : IDL.Vec(JobRequestView),
+    'quotes' : IDL.Vec(Quote),
+    'jobRecords' : IDL.Vec(JobRecordView),
   });
   const VisitRecord = IDL.Record({
     'service' : ServiceCategory,
@@ -490,6 +1274,84 @@ export const idlFactory = ({ IDL }) => {
     'upcomingAppointments' : IDL.Nat,
     'activeJobs' : IDL.Nat,
   });
+  const PaymentSummaryView = IDL.Record({
+    'customerName' : IDL.Text,
+    'depositAmount' : IDL.Nat,
+    'chimeHandle' : IDL.Text,
+    'adjustedSubtotal' : IDL.Nat,
+    'venmoHandle' : IDL.Text,
+    'depositStatus' : DepositStatus,
+    'depositMethod' : IDL.Opt(PaymentMethod),
+    'discountAmount' : IDL.Nat,
+    'finalTotal' : IDL.Nat,
+    'appointmentConfirmed' : IDL.Bool,
+    'serviceDescription' : IDL.Text,
+    'discountReason' : IDL.Text,
+    'referenceCode' : ReferenceCode,
+    'payPalHandle' : IDL.Text,
+    'cashAppHandle' : IDL.Text,
+    'remainingBalance' : IDL.Nat,
+    'originalSubtotal' : IDL.Nat,
+    'acceptedMethods' : IDL.Vec(PaymentMethod),
+    'taxAmount' : IDL.Nat,
+    'appointmentAt' : IDL.Opt(Timestamp),
+  });
+  const QuoteView = IDL.Record({
+    'status' : QuoteStatus,
+    'lineItems' : IDL.Vec(QuoteLineItem),
+    'total' : IDL.Nat,
+    'expiresAt' : IDL.Opt(Timestamp),
+    'expired' : IDL.Bool,
+    'laborCharge' : IDL.Nat,
+    'discountApplied' : IDL.Bool,
+    'discountAmount' : IDL.Nat,
+    'note' : IDL.Text,
+    'quoteNumber' : IDL.Text,
+    'workDescription' : IDL.Text,
+    'pricing' : IDL.Opt(QuotePricing),
+    'referenceCode' : ReferenceCode,
+    'remainingBalance' : IDL.Nat,
+    'materialsCharge' : IDL.Nat,
+    'depositRequired' : IDL.Nat,
+    'subtotal' : IDL.Nat,
+  });
+  const TaxSetting = IDL.Record({
+    'enabled' : IDL.Bool,
+    'ratePercent' : IDL.Nat,
+  });
+  const AdminSettings = IDL.Record({
+    'appointmentReminders' : IDL.Bool,
+    'notificationSound' : IDL.Bool,
+    'messageAlerts' : IDL.Bool,
+    'pushNotifications' : IDL.Bool,
+    'customerRequestAlerts' : IDL.Bool,
+  });
+  const QuoteSettings = IDL.Record({
+    'terms' : IDL.Text,
+    'validityDays' : IDL.Nat,
+  });
+  const DepositSetting = IDL.Record({ 'percent' : IDL.Nat });
+  const BusinessSettings = IDL.Record({
+    'businessName' : IDL.Text,
+    'businessEmail' : IDL.Text,
+    'businessAddress' : IDL.Text,
+    'businessPhone' : IDL.Text,
+  });
+  const PaymentSettings = IDL.Record({
+    'chimeHandle' : IDL.Text,
+    'venmoHandle' : IDL.Text,
+    'payPalHandle' : IDL.Text,
+    'cashAppHandle' : IDL.Text,
+    'acceptedMethods' : IDL.Vec(PaymentMethod),
+  });
+  const SettingsBundle = IDL.Record({
+    'tax' : TaxSetting,
+    'admin' : AdminSettings,
+    'quote' : QuoteSettings,
+    'deposit' : DepositSetting,
+    'business' : BusinessSettings,
+    'payment' : PaymentSettings,
+  });
   const StripeSessionStatus = IDL.Variant({
     'completed' : IDL.Record({
       'userPrincipal' : IDL.Opt(IDL.Text),
@@ -497,21 +1359,113 @@ export const idlFactory = ({ IDL }) => {
     }),
     'failed' : IDL.Record({ 'error' : IDL.Text }),
   });
+  const TwilioConfigStatus = IDL.Record({
+    'configured' : IDL.Bool,
+    'fromNumber' : IDL.Text,
+  });
+  const CustomerSummary = IDL.Record({
+    'id' : CustomerId,
+    'status' : CustomerStatus,
+    'serviceAddress' : IDL.Text,
+    'fullName' : IDL.Text,
+    'email' : IDL.Text,
+    'phone' : IDL.Text,
+    'jobCount' : IDL.Nat,
+  });
+  const NotificationId = IDL.Nat;
+  const NotificationKind = IDL.Variant({
+    'appointmentReminder' : IDL.Null,
+    'depositReceived' : IDL.Null,
+    'returningCustomerRequest' : IDL.Null,
+    'depositVerified' : IDL.Null,
+    'depositSubmitted' : IDL.Null,
+    'appointmentConfirmed' : IDL.Null,
+    'newCustomer' : IDL.Null,
+    'quoteApproved' : IDL.Null,
+    'newRequest' : IDL.Null,
+    'appointmentChanged' : IDL.Null,
+    'customerMessage' : IDL.Null,
+    'paymentReceived' : IDL.Null,
+    'quoteDeclined' : IDL.Null,
+    'newMessage' : IDL.Null,
+    'bookingApproval' : IDL.Null,
+  });
+  const NotificationView = IDL.Record({
+    'id' : NotificationId,
+    'title' : IDL.Text,
+    'relatedCustomerId' : IDL.Opt(CustomerId),
+    'body' : IDL.Text,
+    'kind' : NotificationKind,
+    'createdAt' : Timestamp,
+    'read' : IDL.Bool,
+    'relatedJobId' : IDL.Opt(JobId),
+  });
+  const NotificationError = IDL.Variant({
+    'notAuthorized' : IDL.Null,
+    'notFound' : IDL.Null,
+  });
+  const Result_17 = IDL.Variant({ 'ok' : IDL.Null, 'err' : NotificationError });
+  const MessageError = IDL.Variant({
+    'notAuthorized' : IDL.Null,
+    'invalidInput' : IDL.Text,
+    'notFound' : IDL.Null,
+  });
+  const Result_16 = IDL.Variant({ 'ok' : MessageView, 'err' : MessageError });
+  const Result_15 = IDL.Variant({ 'ok' : PaymentHistory, 'err' : JobError });
+  const QuoteEmailResult = IDL.Variant({
+    'sent' : IDL.Null,
+    'failed' : IDL.Text,
+  });
+  const QuoteSendResult = IDL.Record({
+    'view' : JobRequestView,
+    'email' : QuoteEmailResult,
+  });
+  const Result_14 = IDL.Variant({ 'ok' : QuoteSendResult, 'err' : JobError });
+  const ChannelResult = IDL.Variant({ 'sent' : IDL.Null, 'failed' : IDL.Text });
+  const TestAlertResult = IDL.Record({
+    'sms' : ChannelResult,
+    'email' : ChannelResult,
+  });
+  const Result_13 = IDL.Variant({
+    'ok' : AdminSettings,
+    'err' : SettingsError,
+  });
+  const Result_12 = IDL.Variant({
+    'ok' : BusinessSettings,
+    'err' : SettingsError,
+  });
+  const Result_11 = IDL.Variant({
+    'ok' : DepositSetting,
+    'err' : SettingsError,
+  });
+  const FrontendOriginError = IDL.Variant({ 'invalidOrigin' : IDL.Text });
+  const Result_10 = IDL.Variant({
+    'ok' : IDL.Text,
+    'err' : FrontendOriginError,
+  });
+  const OwnerAlertError = IDL.Variant({
+    'invalidEmail' : IDL.Text,
+    'sendFailed' : IDL.Text,
+  });
+  const Result_9 = IDL.Variant({ 'ok' : IDL.Text, 'err' : OwnerAlertError });
+  const OwnerAlertPhoneError = IDL.Variant({
+    'invalidPhone' : IDL.Text,
+    'sendFailed' : IDL.Text,
+  });
+  const Result_8 = IDL.Variant({
+    'ok' : IDL.Text,
+    'err' : OwnerAlertPhoneError,
+  });
+  const Result_6 = IDL.Variant({
+    'ok' : PaymentSettings,
+    'err' : SettingsError,
+  });
+  const Result_5 = IDL.Variant({ 'ok' : QuoteSettings, 'err' : SettingsError });
   const StripeConfiguration = IDL.Record({
     'allowedCountries' : IDL.Vec(IDL.Text),
     'secretKey' : IDL.Text,
   });
-  const JobRequestInput = IDL.Record({
-    'customerName' : IDL.Text,
-    'preferredTiming' : IDL.Text,
-    'description' : IDL.Text,
-    'photoIds' : IDL.Vec(PhotoId),
-    'ownParts' : IDL.Bool,
-    'email' : IDL.Text,
-    'category' : ServiceCategory,
-    'phone' : IDL.Text,
-    'packageInterest' : IDL.Bool,
-  });
+  const Result_4 = IDL.Variant({ 'ok' : TaxSetting, 'err' : SettingsError });
   const HttpHeader = IDL.Record({ 'value' : IDL.Text, 'name' : IDL.Text });
   const HttpRequestResult = IDL.Record({
     'status' : IDL.Nat,
@@ -556,41 +1510,99 @@ export const idlFactory = ({ IDL }) => {
       ),
     '_immutableObjectStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
     '_initialize_access_control' : IDL.Func([], [], []),
-    '_internet_identity_sign_in_finish' : IDL.Func([], [Result_4], []),
+    '_internet_identity_sign_in_finish' : IDL.Func([], [Result_21], []),
     '_internet_identity_sign_in_start' : IDL.Func([], [IDL.Vec(IDL.Nat8)], []),
-    'acceptQuote' : IDL.Func([ReferenceCode], [Result_1], []),
-    'advanceStatus' : IDL.Func([JobId], [Result_1], []),
-    'assignBeeToJob' : IDL.Func([JobId, BeeId], [Result_2], []),
+    'acceptQuote' : IDL.Func([ReferenceCode], [Result], []),
+    'addCustomerNote' : IDL.Func([CustomerId, IDL.Text], [Result_2], []),
+    'advanceJobRecord' : IDL.Func([JobRecordId], [Result_19], []),
+    'advanceStatus' : IDL.Func([JobId], [Result], []),
+    'approveQuote' : IDL.Func([JobId], [Result], []),
+    'archiveCustomer' : IDL.Func([CustomerId], [Result_2], []),
+    'assignBeeToJob' : IDL.Func([JobId, BeeId], [Result_7], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
-    'confirmAppointment' : IDL.Func([ReferenceCode], [Result_1], []),
-    'confirmDepositPayment' : IDL.Func([ReferenceCode], [Result_1], []),
-    'createBee' : IDL.Func([BeeInput], [Result], []),
+    'cancelJob' : IDL.Func([JobId], [Result], []),
+    'cancelJobRecord' : IDL.Func([JobRecordId], [Result_19], []),
+    'completeJobRecord' : IDL.Func([JobRecordId], [Result_19], []),
+    'confirmAppointment' : IDL.Func([ReferenceCode], [Result], []),
+    'confirmDepositPayment' : IDL.Func([ReferenceCode], [Result], []),
+    'convertQuoteToJob' : IDL.Func([JobId, Timestamp], [Result], []),
+    'createBee' : IDL.Func([BeeInput], [Result_3], []),
     'createCheckoutSession' : IDL.Func(
         [IDL.Vec(ShoppingItem), IDL.Text, IDL.Text],
         [IDL.Text],
         [],
       ),
+    'createCustomer' : IDL.Func([CustomerInput], [Result_2], []),
     'createDepositCheckoutSession' : IDL.Func(
         [ReferenceCode, IDL.Text, IDL.Text],
-        [Result_3],
+        [Result_20],
         [],
       ),
+    'createDiscount' : IDL.Func([DiscountRuleInput], [Result_1], []),
+    'createJobForCustomer' : IDL.Func(
+        [CustomerId, JobRequestInput],
+        [Result],
+        [],
+      ),
+    'createJobRecord' : IDL.Func([JobId, Timestamp], [Result_19], []),
+    'declineQuote' : IDL.Func([JobId], [Result], []),
+    'declineQuoteByReference' : IDL.Func([ReferenceCode], [Result], []),
+    'deleteDiscount' : IDL.Func([DiscountId], [Result_18], []),
+    'editQuote' : IDL.Func([JobId, QuoteInput], [Result], []),
     'execute' : IDL.Func([IDL.Text], [Result__1], ['query']),
+    'exportCustomersCsv' : IDL.Func([], [IDL.Text], ['query']),
     'getApiDoc' : IDL.Func([], [IDL.Text], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getCustomer' : IDL.Func([CustomerId], [IDL.Opt(CustomerView)], ['query']),
+    'getCustomerMessages' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(MessageView)],
+        ['query'],
+      ),
+    'getCustomerProfile' : IDL.Func(
+        [CustomerId],
+        [IDL.Opt(CustomerProfileView)],
+        ['query'],
+      ),
     'getCustomerVisitHistory' : IDL.Func(
         [JobId],
         [IDL.Vec(VisitRecord)],
         ['query'],
       ),
     'getDashboardStats' : IDL.Func([], [DashboardStats], ['query']),
+    'getFrontendOrigin' : IDL.Func([], [IDL.Text], ['query']),
+    'getJobRecord' : IDL.Func(
+        [JobRecordId],
+        [IDL.Opt(JobRecordView)],
+        ['query'],
+      ),
+    'getOwnerAlertEmail' : IDL.Func([], [IDL.Text], ['query']),
+    'getOwnerAlertPhone' : IDL.Func([], [IDL.Text], ['query']),
+    'getPaymentHistoryForJob' : IDL.Func(
+        [JobId],
+        [IDL.Opt(PaymentHistory)],
+        ['query'],
+      ),
+    'getPaymentSummary' : IDL.Func(
+        [ReferenceCode],
+        [IDL.Opt(PaymentSummaryView)],
+        ['query'],
+      ),
+    'getQuoteByReference' : IDL.Func(
+        [ReferenceCode],
+        [IDL.Opt(QuoteView)],
+        ['query'],
+      ),
     'getRequest' : IDL.Func([JobId], [IDL.Opt(JobRequestView)], ['query']),
     'getRequestByReference' : IDL.Func(
         [ReferenceCode],
         [IDL.Opt(JobRequestView)],
         ['query'],
       ),
+    'getSettings' : IDL.Func([], [SettingsBundle], ['query']),
     'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+    'getTwilioConfigStatus' : IDL.Func([], [TwilioConfigStatus], ['query']),
+    'getUnreadNotificationCount' : IDL.Func([], [IDL.Nat], ['query']),
     'getVisitHistory' : IDL.Func(
         [ReferenceCode],
         [IDL.Vec(VisitRecord)],
@@ -599,25 +1611,102 @@ export const idlFactory = ({ IDL }) => {
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'isStripeConfigured' : IDL.Func([], [IDL.Bool], ['query']),
     'listBees' : IDL.Func([], [IDL.Vec(BeeView)], ['query']),
+    'listCustomerMessages' : IDL.Func(
+        [CustomerId],
+        [IDL.Vec(MessageView)],
+        ['query'],
+      ),
+    'listCustomers' : IDL.Func(
+        [IDL.Bool],
+        [IDL.Vec(CustomerSummary)],
+        ['query'],
+      ),
+    'listDiscounts' : IDL.Func([], [IDL.Vec(DiscountRule)], ['query']),
+    'listJobRecords' : IDL.Func([], [IDL.Vec(JobRecordView)], ['query']),
+    'listNotifications' : IDL.Func([], [IDL.Vec(NotificationView)], ['query']),
+    'listPaymentHistory' : IDL.Func([], [IDL.Vec(PaymentHistory)], ['query']),
     'listRequests' : IDL.Func([], [IDL.Vec(JobRequestView)], ['query']),
-    'recordDeposit' : IDL.Func([ReferenceCode, PaymentMethod], [Result_1], []),
-    'scheduleAppointment' : IDL.Func([JobId, Timestamp], [Result_1], []),
-    'schema' : IDL.Func([], [IDL.Text], ['query']),
-    'setPackageEnrollment' : IDL.Func([JobId, IDL.Bool], [Result_2], []),
-    'setQuote' : IDL.Func([JobId, IDL.Nat, IDL.Text], [Result_1], []),
-    'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
-    'submitRequest' : IDL.Func([JobRequestInput], [ReferenceCode], []),
-    'submitReview' : IDL.Func(
-        [ReferenceCode, IDL.Nat, IDL.Text],
-        [Result_1],
+    'markAllNotificationsRead' : IDL.Func([], [], []),
+    'markNotificationRead' : IDL.Func([NotificationId], [Result_17], []),
+    'postAdminMessage' : IDL.Func(
+        [CustomerId, IDL.Opt(JobId), IDL.Text],
+        [Result_16],
         [],
       ),
+    'postCustomerMessage' : IDL.Func([IDL.Text, IDL.Text], [Result_16], []),
+    'raiseNotification' : IDL.Func(
+        [
+          NotificationKind,
+          IDL.Text,
+          IDL.Text,
+          IDL.Opt(JobId),
+          IDL.Opt(CustomerId),
+        ],
+        [NotificationId],
+        [],
+      ),
+    'recordDeposit' : IDL.Func([ReferenceCode, PaymentMethod], [Result], []),
+    'recordFinalPayment' : IDL.Func(
+        [JobId, IDL.Nat, PaymentMethod],
+        [Result_15],
+        [],
+      ),
+    'rejectDeposit' : IDL.Func([ReferenceCode], [Result], []),
+    'resolveOrCreateCustomer' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [CustomerId],
+        [],
+      ),
+    'restoreCustomer' : IDL.Func([CustomerId], [Result_2], []),
+    'scheduleAppointment' : IDL.Func([JobId, Timestamp], [Result], []),
+    'schema' : IDL.Func([], [IDL.Text], ['query']),
+    'searchCustomers' : IDL.Func(
+        [IDL.Text],
+        [IDL.Vec(CustomerSummary)],
+        ['query'],
+      ),
+    'sendAppointmentReminder' : IDL.Func([JobId], [Result], []),
+    'sendQuote' : IDL.Func([JobId], [Result_14], []),
+    'sendTestAlert' : IDL.Func([], [TestAlertResult], []),
+    'setAdminSettings' : IDL.Func([AdminSettings], [Result_13], []),
+    'setBusinessSettings' : IDL.Func([BusinessSettings], [Result_12], []),
+    'setCustomerStatus' : IDL.Func(
+        [CustomerId, CustomerStatus],
+        [Result_2],
+        [],
+      ),
+    'setDepositSetting' : IDL.Func([DepositSetting], [Result_11], []),
+    'setDiscountActive' : IDL.Func([DiscountId, IDL.Bool], [Result_1], []),
+    'setFrontendOrigin' : IDL.Func([IDL.Text], [Result_10], []),
+    'setOwnerAlertEmail' : IDL.Func([IDL.Text], [Result_9], []),
+    'setOwnerAlertPhone' : IDL.Func([IDL.Text], [Result_8], []),
+    'setPackageEnrollment' : IDL.Func([JobId, IDL.Bool], [Result_7], []),
+    'setPaymentSettings' : IDL.Func([PaymentSettings], [Result_6], []),
+    'setQuote' : IDL.Func([JobId, IDL.Nat, IDL.Text], [Result], []),
+    'setQuoteSettings' : IDL.Func([QuoteSettings], [Result_5], []),
+    'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
+    'setTaxSetting' : IDL.Func([TaxSetting], [Result_4], []),
+    'setTwilioCredentials' : IDL.Func(
+        [IDL.Text, IDL.Text, IDL.Text, IDL.Text],
+        [],
+        [],
+      ),
+    'submitDeposit' : IDL.Func([ReferenceCode, PaymentMethod], [Result], []),
+    'submitRequest' : IDL.Func([JobRequestInput], [ReferenceCode], []),
+    'submitReview' : IDL.Func([ReferenceCode, IDL.Nat, IDL.Text], [Result], []),
     'transform' : IDL.Func(
         [TransformationInput],
         [TransformationOutput],
         ['query'],
       ),
-    'updateBee' : IDL.Func([BeeId, BeeInput], [Result], []),
+    'updateBee' : IDL.Func([BeeId, BeeInput], [Result_3], []),
+    'updateCustomer' : IDL.Func([CustomerId, CustomerInput], [Result_2], []),
+    'updateDiscount' : IDL.Func(
+        [DiscountId, DiscountRuleInput],
+        [Result_1],
+        [],
+      ),
+    'verifyDeposit' : IDL.Func([ReferenceCode], [Result], []),
   });
 };
 

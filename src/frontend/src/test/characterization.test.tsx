@@ -1,4 +1,9 @@
-import { JobStatus, PaymentMethod, ServiceCategory } from "@/backend";
+import {
+  DepositStatus,
+  JobStatus,
+  PaymentMethod,
+  ServiceCategory,
+} from "@/backend";
 import { CASHAPP_HANDLE } from "@/lib/jobs";
 import { makeJob, makeQuote } from "@/test/fixtures";
 import {
@@ -95,6 +100,7 @@ describe("CashApp deposit path", () => {
           amount: 10_000n,
           method: PaymentMethod.cashApp,
           paid: true,
+          status: DepositStatus.verified,
           paidAt: 1_700_000_200_000_000_000n,
         },
       }),
@@ -232,13 +238,14 @@ describe("own-parts/supplies 10% discount", () => {
 
     await lookupJob();
 
-    const badge = await screen.findByText(/10% off/i);
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveTextContent(/own parts\/supplies discount applied/i);
-    expect(badge).toHaveTextContent(/\$20\.00/);
+    // The redesigned customer-facing quote shows the discount as an itemized
+    // line rather than the old "10% off" badge. The applied discount and its
+    // amount must still be visible to the customer.
     expect(
-      screen.getByText(/own parts\/supplies discount \(10%\)/i),
-    ).toBeInTheDocument();
+      (await screen.findAllByText(/own parts\/supplies discount \(10%\)/i))
+        .length,
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByText(/−\$20\.00/).length).toBeGreaterThan(0);
   });
 
   it("shows the applied discount next to the admin quote box", async () => {

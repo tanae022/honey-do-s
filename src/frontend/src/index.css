@@ -38,24 +38,26 @@
 
     /* Near-black hive base — the logo's #0A0805 field, warm-shifted */
     --background: 0.1 0.01 72;
-    --foreground: 0.955 0.024 92;
+    /* Warm ivory, pushed brighter for AA+ body copy on chocolate panels */
+    --foreground: 0.972 0.018 92;
 
-    /* Warm chocolate card surfaces lifted off the black field */
-    --card: 0.165 0.022 66;
-    --card-foreground: 0.955 0.024 92;
+    /* Solid dark chocolate card surfaces lifted off the black field */
+    --card: 0.185 0.024 66;
+    --card-foreground: 0.972 0.018 92;
 
-    --popover: 0.145 0.02 66;
-    --popover-foreground: 0.955 0.024 92;
+    --popover: 0.165 0.022 66;
+    --popover-foreground: 0.972 0.018 92;
 
     /* Saturated amber-gold (logo honeycomb #F5A623 → #FFCC66) */
     --primary: 0.79 0.175 76;
     --primary-foreground: 0.155 0.03 64;
 
-    --secondary: 0.225 0.032 68;
-    --secondary-foreground: 0.9 0.028 88;
+    --secondary: 0.245 0.034 68;
+    --secondary-foreground: 0.93 0.022 88;
 
-    --muted: 0.205 0.024 68;
-    --muted-foreground: 0.7 0.045 84;
+    --muted: 0.225 0.026 68;
+    /* Lifted from 0.7 → 0.775 so secondary labels stay AA+ on panels */
+    --muted-foreground: 0.775 0.038 84;
 
     /* Bright metallic gold bevel highlight (logo's gold rim light) */
     --accent: 0.865 0.155 94;
@@ -71,8 +73,9 @@
     --warning: 0.815 0.16 86;
     --warning-foreground: 0.155 0.03 64;
 
-    --border: 0.32 0.05 78;
-    --input: 0.29 0.038 70;
+    /* Gold-tinted hairlines: brighter than before so panel edges read */
+    --border: 0.4 0.055 78;
+    --input: 0.3 0.04 70;
     --ring: 0.865 0.155 94;
 
     --chart-1: 0.79 0.175 76;
@@ -80,6 +83,35 @@
     --chart-3: 0.63 0.14 140;
     --chart-4: 0.52 0.13 42;
     --chart-5: 0.7 0.045 84;
+
+    /* ---- CRM extension tokens (Honey Do's admin console) ---- */
+    /* Warm coral-amber "new activity" accent: reads as a fresh alert
+       against the gold primary without stealing its CTA role. */
+    --notification: 0.72 0.19 44;
+    --notification-foreground: 0.16 0.03 44;
+    /* Customer lifecycle statuses — honey-adjacent, never off-palette. */
+    --status-active: 0.7 0.16 150;
+    --status-active-foreground: 0.15 0.03 150;
+    --status-paused: 0.8 0.14 88;
+    --status-paused-foreground: 0.16 0.03 80;
+    --status-archived: 0.56 0.02 72;
+    --status-archived-foreground: 0.97 0.01 88;
+    /* Customer surface: a hair warmer + lighter than --card so directory
+       rows lift off the chocolate field without a hard border. */
+    --customer: 0.215 0.03 68;
+    --customer-foreground: 0.972 0.018 92;
+    --customer-hover: 0.275 0.042 72;
+
+    /* ---- Solid customer-info panel system (no comb behind data) ---- */
+    /* Opaque chocolate/charcoal surfaces that fully cover the honeycomb
+       background so customer information always sits on a solid, calm
+       ground. Gold hairline + inner top highlight give a premium,
+       dimensional edge without the busy pattern. */
+    --panel: 0.2 0.026 66;
+    --panel-raised: 0.235 0.03 68;
+    --panel-foreground: 0.972 0.018 92;
+    --panel-border: 0.44 0.06 80;
+    --panel-border-strong: 0.62 0.1 84;
 
     --sidebar: 0.145 0.02 66;
     --sidebar-foreground: 0.955 0.024 92;
@@ -135,6 +167,70 @@
       oklch(0.84 0.185 82) 55%,
       oklch(0.71 0.17 64) 100%
     );
+    /* CRM surfaces: solid chocolate-to-charcoal gradients that fully
+       occlude the honeycomb background behind customer data. */
+    --gradient-customer: linear-gradient(
+      145deg,
+      oklch(0.245 0.034 70) 0%,
+      oklch(0.185 0.024 66) 100%
+    );
+    --gradient-notification: linear-gradient(
+      160deg,
+      oklch(0.78 0.185 52) 0%,
+      oklch(0.68 0.19 40) 100%
+    );
+
+    /* ---- Light admin surface system (professional HVAC/home-service UI) ----
+       The customer-facing side stays dark honeycomb; the private admin side
+       is light, clean and high-contrast. These tokens are theme-independent:
+       they are declared once and never re-declared in .dark, because the
+       admin shell forces its own light ground regardless of the app theme. */
+    --admin-bg: 0.975 0.004 90;
+    --admin-surface: 1 0 0;
+    --admin-surface-alt: 0.965 0.006 90;
+    --admin-foreground: 0.2 0.012 260;
+    --admin-muted-foreground: 0.46 0.014 260;
+    --admin-border: 0.88 0.008 260;
+    --admin-border-strong: 0.74 0.012 260;
+    --admin-primary: 0.52 0.16 250;
+    --admin-primary-foreground: 0.99 0.004 250;
+    --admin-accent: 0.72 0.16 68;
+    --admin-accent-foreground: 0.22 0.03 60;
+    --admin-ring: 0.52 0.16 250;
+    --admin-shadow: 0 1px 2px oklch(0.3 0.02 260 / 0.08), 0 4px 14px -6px
+      oklch(0.3 0.02 260 / 0.14);
+
+    /* ---- Admin status palette: obvious, high-contrast, label-first ---- */
+    --admin-status-new: 0.55 0.19 255;
+    --admin-status-new-fg: 0.99 0.004 255;
+    --admin-status-waiting: 0.62 0.13 62;
+    --admin-status-waiting-fg: 0.2 0.03 60;
+    --admin-status-action: 0.58 0.2 32;
+    --admin-status-action-fg: 0.99 0.004 32;
+    --admin-status-approved: 0.56 0.14 195;
+    --admin-status-approved-fg: 0.99 0.004 195;
+    --admin-status-paid: 0.5 0.13 155;
+    --admin-status-paid-fg: 0.99 0.004 155;
+    --admin-status-confirmed: 0.5 0.15 172;
+    --admin-status-confirmed-fg: 0.99 0.004 172;
+    --admin-status-progress: 0.6 0.16 85;
+    --admin-status-progress-fg: 0.2 0.03 80;
+    --admin-status-completed: 0.46 0.1 150;
+    --admin-status-completed-fg: 0.99 0.004 150;
+    --admin-status-cancelled: 0.5 0.02 260;
+    --admin-status-cancelled-fg: 0.99 0.004 260;
+
+    /* ---- Text outline tiers (black stroke, paint-order: stroke fill) ---- */
+    /* Tier 1 body copy, tier 2 headings, tier 3 display/hero,             */
+    /* tier 4 text over busy imagery. All black; widths scale with size.   */
+    --outline-body: 0.6px;
+    --outline-heading: 0.9px;
+    --outline-display: 1.35px;
+    --outline-imagery: 1.6px;
+    --outline-color: oklch(0.05 0.01 64);
+    /* Soft black halo that deepens the outline over gradients/photos */
+    --outline-halo: 0 1px 2px oklch(0.05 0.01 64 / 0.55), 0 0 6px
+      oklch(0.05 0.01 64 / 0.35);
 
     --shadow-honey: 0 10px 30px -10px oklch(0.74 0.18 76 / 0.5);
     --shadow-comb: 0 1px 0 oklch(0.98 0.06 96 / 0.5), 0 2px 6px -2px
@@ -148,6 +244,27 @@
        Used at low opacity as the app-wide fixed background so text stays
        high-contrast. Tile is 104x180 to match the 60px hex pitch. */
     --comb-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='104' height='180' viewBox='0 0 104 180'%3E%3Cdefs%3E%3ClinearGradient id='c' x1='0' y1='0' x2='0.55' y2='1'%3E%3Cstop offset='0' stop-color='%23ffd98a' stop-opacity='0.30'/%3E%3Cstop offset='0.42' stop-color='%23f5a623' stop-opacity='0.16'/%3E%3Cstop offset='1' stop-color='%238a4a12' stop-opacity='0.05'/%3E%3C/linearGradient%3E%3ClinearGradient id='r' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffe9b0' stop-opacity='0.55'/%3E%3Cstop offset='0.5' stop-color='%23e0a52b' stop-opacity='0.34'/%3E%3Cstop offset='1' stop-color='%237a4310' stop-opacity='0.22'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='none' stroke='url(%23r)' stroke-width='2.4' stroke-linejoin='round'%3E%3Cpath d='M26 4 L78 4 L104 49 L78 94 L26 94 L0 49 Z'/%3E%3Cpath d='M26 94 L78 94 L104 139 L78 184 L26 184 L0 139 Z'/%3E%3Cpath d='M-26 49 L26 49 L52 94 L26 139 L-26 139 L-52 94 Z'/%3E%3Cpath d='M78 49 L130 49 L156 94 L130 139 L78 139 L52 94 Z'/%3E%3C/g%3E%3Cg fill='url(%23c)'%3E%3Cpath d='M26 4 L78 4 L104 49 L78 94 L26 94 L0 49 Z'/%3E%3Cpath d='M26 94 L78 94 L104 139 L78 184 L26 184 L0 139 Z'/%3E%3Cpath d='M-26 49 L26 49 L52 94 L26 139 L-26 139 L-52 94 Z'/%3E%3Cpath d='M78 49 L130 49 L156 94 L130 139 L78 139 L52 94 Z'/%3E%3C/g%3E%3C/svg%3E");
+
+    /* ---- Living 3D honeycomb: three depth planes ---- */
+    /* FAR plane: small, dim, low-contrast cells — the distant hive wall. */
+    --comb-tile-far: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='90' viewBox='0 0 52 90'%3E%3Cdefs%3E%3ClinearGradient id='f' x1='0' y1='0' x2='0.6' y2='1'%3E%3Cstop offset='0' stop-color='%23ffd98a' stop-opacity='0.10'/%3E%3Cstop offset='0.5' stop-color='%23c07a1e' stop-opacity='0.05'/%3E%3Cstop offset='1' stop-color='%23120a02' stop-opacity='0.02'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='url(%23f)' stroke='%23e8b45a' stroke-opacity='0.14' stroke-width='1' stroke-linejoin='round'%3E%3Cpath d='M13 2 L39 2 L52 24.5 L39 47 L13 47 L0 24.5 Z'/%3E%3Cpath d='M13 47 L39 47 L52 69.5 L39 92 L13 92 L0 69.5 Z'/%3E%3Cpath d='M-13 24.5 L13 24.5 L26 47 L13 69.5 L-13 69.5 L-26 47 Z'/%3E%3Cpath d='M39 24.5 L65 24.5 L78 47 L65 69.5 L39 69.5 L26 47 Z'/%3E%3C/g%3E%3C/svg%3E");
+    /* MID plane: the workhorse field — beveled gold rim, amber gloss,     */
+    /* inner shadow well and a specular top-left highlight per cell.        */
+    --comb-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='104' height='180' viewBox='0 0 104 180'%3E%3Cdefs%3E%3ClinearGradient id='c' x1='0' y1='0' x2='0.55' y2='1'%3E%3Cstop offset='0' stop-color='%23ffd98a' stop-opacity='0.30'/%3E%3Cstop offset='0.42' stop-color='%23f5a623' stop-opacity='0.16'/%3E%3Cstop offset='1' stop-color='%238a4a12' stop-opacity='0.05'/%3E%3C/linearGradient%3E%3ClinearGradient id='r' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ffe9b0' stop-opacity='0.55'/%3E%3Cstop offset='0.5' stop-color='%23e0a52b' stop-opacity='0.34'/%3E%3Cstop offset='1' stop-color='%237a4310' stop-opacity='0.22'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg fill='none' stroke='url(%23r)' stroke-width='2.4' stroke-linejoin='round'%3E%3Cpath d='M26 4 L78 4 L104 49 L78 94 L26 94 L0 49 Z'/%3E%3Cpath d='M26 94 L78 94 L104 139 L78 184 L26 184 L0 139 Z'/%3E%3Cpath d='M-26 49 L26 49 L52 94 L26 139 L-26 139 L-52 94 Z'/%3E%3Cpath d='M78 49 L130 49 L156 94 L130 139 L78 139 L52 94 Z'/%3E%3C/g%3E%3Cg fill='url(%23c)'%3E%3Cpath d='M26 4 L78 4 L104 49 L78 94 L26 94 L0 49 Z'/%3E%3Cpath d='M26 94 L78 94 L104 139 L78 184 L26 184 L0 139 Z'/%3E%3Cpath d='M-26 49 L26 49 L52 94 L26 139 L-26 139 L-52 94 Z'/%3E%3Cpath d='M78 49 L130 49 L156 94 L130 139 L78 139 L52 94 Z'/%3E%3C/g%3E%3C/svg%3E");
+    /* NEAR plane: large, bright, high-contrast cells with a strong gold    */
+    /* rim, deep inner shadow and a hot specular glint — the foreground cap. */
+    --comb-tile-near: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='208' height='360' viewBox='0 0 208 360'%3E%3Cdefs%3E%3ClinearGradient id='n' x1='0.1' y1='0' x2='0.7' y2='1'%3E%3Cstop offset='0' stop-color='%23ffe6ab' stop-opacity='0.42'/%3E%3Cstop offset='0.4' stop-color='%23f5a623' stop-opacity='0.22'/%3E%3Cstop offset='1' stop-color='%237a3d0c' stop-opacity='0.06'/%3E%3C/linearGradient%3E%3ClinearGradient id='nr' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23fff2c8' stop-opacity='0.72'/%3E%3Cstop offset='0.48' stop-color='%23e0a52b' stop-opacity='0.44'/%3E%3Cstop offset='1' stop-color='%236b3a0c' stop-opacity='0.3'/%3E%3C/linearGradient%3E%3CradialGradient id='s' cx='0.3' cy='0.22' r='0.42'%3E%3Cstop offset='0' stop-color='%23fff6dd' stop-opacity='0.7'/%3E%3Cstop offset='1' stop-color='%23fff6dd' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cg fill='none' stroke='url(%23nr)' stroke-width='4.6' stroke-linejoin='round'%3E%3Cpath d='M52 8 L156 8 L208 98 L156 188 L52 188 L0 98 Z'/%3E%3Cpath d='M52 188 L156 188 L208 278 L156 368 L52 368 L0 278 Z'/%3E%3Cpath d='M-52 98 L52 98 L104 188 L52 278 L-52 278 L-104 188 Z'/%3E%3Cpath d='M156 98 L260 98 L312 188 L260 278 L156 278 L104 188 Z'/%3E%3C/g%3E%3Cg fill='url(%23n)'%3E%3Cpath d='M52 8 L156 8 L208 98 L156 188 L52 188 L0 98 Z'/%3E%3Cpath d='M52 188 L156 188 L208 278 L156 368 L52 368 L0 278 Z'/%3E%3Cpath d='M-52 98 L52 98 L104 188 L52 278 L-52 278 L-104 188 Z'/%3E%3Cpath d='M156 98 L260 98 L312 188 L260 278 L156 278 L104 188 Z'/%3E%3C/g%3E%3Cg fill='url(%23s)'%3E%3Cpath d='M52 8 L156 8 L208 98 L156 188 L52 188 L0 98 Z'/%3E%3Cpath d='M52 188 L156 188 L208 278 L156 368 L52 368 L0 278 Z'/%3E%3C/g%3E%3C/svg%3E");
+    /* Honey gloss seeping through the cells — warm wet sheen overlay */
+    --comb-honey-gloss: radial-gradient(
+        90% 60% at 30% 18%,
+        oklch(0.95 0.14 96 / 0.28) 0%,
+        transparent 58%
+      ),
+      radial-gradient(
+        70% 50% at 78% 82%,
+        oklch(0.86 0.17 82 / 0.22) 0%,
+        transparent 60%
+      );
   }
 
   * {
@@ -164,7 +281,7 @@
   /* ------------------------------------------------------------------ */
   body,
   body * {
-    -webkit-text-stroke: 0.6px oklch(0.05 0.01 64);
+    -webkit-text-stroke: var(--outline-body) var(--outline-color);
     paint-order: stroke fill;
   }
 
@@ -176,7 +293,15 @@
   h4,
   h5,
   h6 {
-    -webkit-text-stroke-width: 0.9px;
+    -webkit-text-stroke-width: var(--outline-heading);
+  }
+
+  /* Display / hero type gets the heaviest outline plus a soft black halo  */
+  /* so large light glyphs read crisply over the comb and honey gradients. */
+  .text-display,
+  h1 {
+    -webkit-text-stroke-width: var(--outline-display);
+    text-shadow: var(--outline-halo);
   }
 
   /* App-wide honeycomb + honey background, fixed behind every page.
@@ -238,14 +363,30 @@
      treatment is greppable/testable. `paint-order: stroke fill` keeps the
      glyph fill on top of the stroke for legibility on every background. */
   .text-outline-black {
-    -webkit-text-stroke: 0.6px oklch(0.05 0.01 64);
+    -webkit-text-stroke: var(--outline-body) var(--outline-color);
     paint-order: stroke fill;
   }
 
   /* Heavier outline for display headings and large numerals. */
   .text-outline-black-strong {
-    -webkit-text-stroke: 0.9px oklch(0.05 0.01 64);
+    -webkit-text-stroke: var(--outline-heading) var(--outline-color);
     paint-order: stroke fill;
+  }
+
+  /* Tier 3 — large display / hero type: heaviest stroke + soft black halo. */
+  .text-outline-black-display {
+    -webkit-text-stroke: var(--outline-display) var(--outline-color);
+    paint-order: stroke fill;
+    text-shadow: var(--outline-halo);
+  }
+
+  /* Tier 4 — text sitting over busy imagery / gradients: max stroke width
+     plus a doubled halo, so light glyphs never dissolve into the picture. */
+  .text-outline-black-imagery {
+    -webkit-text-stroke: var(--outline-imagery) var(--outline-color);
+    paint-order: stroke fill;
+    text-shadow: 0 1px 3px oklch(0.05 0.01 64 / 0.7), 0 0 10px
+      oklch(0.05 0.01 64 / 0.5);
   }
 
   /* Glossy honey gradient surface for primary actions */
@@ -315,6 +456,59 @@
     background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat,
       repeat;
     background-attachment: fixed;
+  }
+
+  /* ---- Living 3D honeycomb depth planes ---- */
+  /* Three parallax planes stacked far → mid → near give the hive real     */
+  /* depth: the far wall drifts slowest and dimmest, the near caps drift    */
+  /* fastest and brightest. Each plane is a real beveled SVG tile, not a    */
+  /* line grid, so cells read as dimensional wax wells with gold rims.      */
+  .comb-plane {
+    position: absolute;
+    inset: -20%;
+    background-repeat: repeat;
+    will-change: transform, opacity;
+    pointer-events: none;
+  }
+  .comb-plane-far {
+    background-image: var(--comb-tile-far);
+    background-size: 52px 90px;
+    opacity: 0.55;
+    animation: comb-drift-far 68s linear infinite;
+  }
+  .comb-plane-mid {
+    background-image: var(--comb-tile);
+    background-size: 104px 180px;
+    opacity: 0.7;
+    animation: comb-drift 48s linear infinite;
+  }
+  .comb-plane-near {
+    background-image: var(--comb-tile-near);
+    background-size: 208px 360px;
+    opacity: 0.5;
+    animation: comb-drift-near 34s linear infinite;
+  }
+  /* Warm breathing glow that pulses the hive's light level */
+  .comb-breathe {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: var(--comb-honey-gloss);
+    animation: hive-breathe 9s ease-in-out infinite;
+  }
+  /* Honey seeping/glossing through the cells — slow wet sheen sweep */
+  .comb-honey-sheen {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(
+      115deg,
+      transparent 30%,
+      oklch(0.95 0.14 96 / 0.16) 50%,
+      transparent 70%
+    );
+    background-size: 240% 240%;
+    animation: honey-sheen 14s ease-in-out infinite;
   }
 
   /* Warm gold center glow echoing the logo badge's lit core */
@@ -409,5 +603,337 @@
   .scrollbar-honey::-webkit-scrollbar-thumb {
     background: oklch(0.74 0.18 76 / 0.42);
     border-radius: 9999px;
+  }
+
+  /* ---- Solid customer-info panel system ---- */
+  /* Opaque chocolate/charcoal surfaces that fully occlude the honeycomb
+     background, so customer information is always read on a calm, solid
+     ground. A gold hairline border plus an inset top highlight gives the
+     premium, dimensional edge the brand is known for — without the busy
+     pattern showing through. */
+  .honey-panel {
+    background-color: oklch(var(--panel));
+    background-image: linear-gradient(
+      160deg,
+      oklch(0.245 0.032 70) 0%,
+      oklch(var(--panel)) 60%,
+      oklch(0.175 0.022 64) 100%
+    );
+    border: 1px solid oklch(var(--panel-border) / 0.55);
+    box-shadow: inset 0 1px 0 oklch(0.95 0.06 92 / 0.1), 0 14px 32px -20px
+      oklch(0.05 0.01 60 / 0.95);
+  }
+
+  /* Slightly lifted panel for nested groups / stat tiles */
+  .honey-panel-raised {
+    background-color: oklch(var(--panel-raised));
+    border: 1px solid oklch(var(--panel-border) / 0.4);
+    box-shadow: inset 0 1px 0 oklch(0.95 0.06 92 / 0.08), 0 8px 20px -16px
+      oklch(0.05 0.01 60 / 0.9);
+  }
+
+  /* Emphasized panel: a stronger gold hairline for the focal customer card */
+  .honey-panel-accent {
+    border-color: oklch(var(--panel-border-strong) / 0.6);
+    box-shadow: inset 0 1px 0 oklch(0.96 0.09 94 / 0.14), 0 0 0 1px
+      oklch(var(--panel-border-strong) / 0.16), 0 18px 40px -22px
+      oklch(0.05 0.01 60 / 0.95);
+  }
+
+  /* Gold hairline divider between grouped info rows */
+  .gold-hairline {
+    border-color: oklch(var(--panel-border) / 0.35);
+  }
+
+  /* Bright gold accent text — reserved for highlights and key values */
+  .text-gold-accent {
+    color: oklch(0.87 0.15 92);
+  }
+
+  /* ---- CRM / admin console surfaces ---- */
+  /* Customer directory row: warm chocolate gradient, gold-tinted edge,
+     lifts to a brighter honey-warmed surface on hover. */
+  .crm-row {
+    background-image: var(--gradient-customer);
+    box-shadow: inset 0 1px 0 oklch(0.9 0.08 90 / 0.12), 0 10px 24px -18px
+      oklch(0.05 0.01 60 / 0.9);
+    transition: var(--transition-smooth);
+  }
+  .crm-row:hover,
+  .crm-row:focus-visible {
+    background-image: linear-gradient(
+      145deg,
+      oklch(0.27 0.045 72) 0%,
+      oklch(0.205 0.03 68) 100%
+    );
+    box-shadow: inset 0 1px 0 oklch(0.94 0.1 92 / 0.2), var(--shadow-honey);
+  }
+
+  /* Hex-clipped customer avatar disc — initials sit on a glossy honey cell */
+  .crm-avatar {
+    background-image: var(--gradient-comb-cell);
+    box-shadow: inset 0 1px 0 oklch(0.99 0.06 96 / 0.6), inset 0 -2px 5px
+      oklch(0.46 0.13 58 / 0.55);
+  }
+
+  /* Notification bell badge — coral-amber alert dot with a soft halo */
+  .notification-badge {
+    background-image: var(--gradient-notification);
+    color: oklch(var(--notification-foreground));
+    box-shadow: 0 0 0 1px oklch(0.72 0.19 44 / 0.5), 0 0 16px -2px
+      oklch(0.75 0.19 48 / 0.6);
+  }
+
+  /* Notification popover panel */
+  .notification-panel {
+    background-image: var(--gradient-customer);
+    box-shadow: inset 0 1px 0 oklch(0.92 0.09 92 / 0.16), 0 24px 50px -20px
+      oklch(0.05 0.01 60 / 0.95);
+  }
+
+  /* ---- Form-field readability contract ---- */
+  /* Every text-entry surface (single-line input, multi-line textarea and the
+     preferred-contact / assign-bee dropdowns) shares one treatment so typed
+     wording reads crisply against the dark honeycomb background:
+       - entered text is the bright cream foreground token, not a dimmed one;
+       - the app-wide black outline (stroke behind the glyph fill) is
+         re-asserted so the treatment survives any reset;
+       - placeholders are lightened to a clearly readable level while staying
+         visibly lighter/dimmer than entered text so the two never blur.
+     Focus and invalid states are owned by the component classes and are left
+     untouched here. */
+  .form-field {
+    color: oklch(var(--foreground));
+    -webkit-text-stroke: var(--outline-body) var(--outline-color);
+    paint-order: stroke fill;
+  }
+  .form-field::placeholder {
+    color: oklch(0.82 0.04 88);
+    opacity: 1;
+    -webkit-text-stroke: var(--outline-body) var(--outline-color);
+    paint-order: stroke fill;
+  }
+  /* Native dropdowns render their own option list; keep the chosen value and
+     the option labels on the same bright, outlined treatment. */
+  .form-field option {
+    color: oklch(var(--foreground));
+    background-color: oklch(var(--popover));
+  }
+
+  /* Search field: inset honey well that lights its gold rim on focus */
+  .search-field {
+    background-color: oklch(var(--input));
+    box-shadow: inset 0 1px 3px oklch(0.05 0.01 60 / 0.6);
+    transition: var(--transition-smooth);
+  }
+  .search-field:focus-within {
+    box-shadow: inset 0 1px 3px oklch(0.05 0.01 60 / 0.6), var(--glow-honey);
+  }
+
+  /* Customer status chips */
+  .status-chip-active {
+    background-color: oklch(var(--status-active) / 0.22);
+    color: oklch(var(--status-active));
+    box-shadow: inset 0 0 0 1px oklch(var(--status-active) / 0.45);
+  }
+  .status-chip-paused {
+    background-color: oklch(var(--status-paused) / 0.2);
+    color: oklch(var(--status-paused));
+    box-shadow: inset 0 0 0 1px oklch(var(--status-paused) / 0.45);
+  }
+  .status-chip-archived {
+    background-color: oklch(var(--status-archived) / 0.28);
+    color: oklch(var(--status-archived-foreground));
+    box-shadow: inset 0 0 0 1px oklch(var(--status-archived) / 0.5);
+  }
+
+  /* Profile stat tile — inset honey well for counts and dates */
+  .crm-stat {
+    background-color: oklch(var(--muted));
+    box-shadow: inset 0 1px 0 oklch(0.92 0.08 90 / 0.1), inset 0 -2px 6px
+      oklch(0.05 0.01 60 / 0.5);
+  }
+
+  /* ================================================================== */
+  /* Light admin surface system (professional HVAC/home-service UI)      */
+  /* The customer side is dark honeycomb; the private admin side is      */
+  /* light, clean and high-contrast. Admin surfaces fully occlude the    */
+  /* comb, disable the black text outline, and use large readable type.  */
+  /* ================================================================== */
+
+  /* Admin shell: solid light ground, no honeycomb, no decorative bg. */
+  .admin-shell {
+    background-color: oklch(var(--admin-bg));
+    background-image: none;
+    color: oklch(var(--admin-foreground));
+  }
+  /* Admin text is dark-on-light: the app-wide black outline would smear
+     it, so it is fully disabled inside the admin shell. */
+  .admin-shell,
+  .admin-shell * {
+    -webkit-text-stroke: 0;
+    text-shadow: none;
+  }
+
+  /* White card: the primary admin information container. */
+  .admin-card {
+    background-color: oklch(var(--admin-surface));
+    border: 1px solid oklch(var(--admin-border));
+    border-radius: 0.75rem;
+    box-shadow: var(--admin-shadow);
+    color: oklch(var(--admin-foreground));
+  }
+  .admin-card-alt {
+    background-color: oklch(var(--admin-surface-alt));
+  }
+
+  /* Admin section label: small, uppercase, high-contrast, never tiny. */
+  .admin-label {
+    color: oklch(var(--admin-muted-foreground));
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* Simple admin table: generous row height, clear dividers, no scroll. */
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+  }
+  .admin-table th {
+    text-align: left;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: oklch(var(--admin-muted-foreground));
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid oklch(var(--admin-border-strong));
+    white-space: nowrap;
+  }
+  .admin-table td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid oklch(var(--admin-border));
+    color: oklch(var(--admin-foreground));
+    vertical-align: middle;
+  }
+  .admin-table tbody tr:hover {
+    background-color: oklch(var(--admin-surface-alt));
+  }
+
+  /* Large tap-target admin button. */
+  .admin-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border-radius: 0.625rem;
+    font-size: 1rem;
+    font-weight: 600;
+    background-color: oklch(var(--admin-primary));
+    color: oklch(var(--admin-primary-foreground));
+    transition: var(--transition-smooth);
+  }
+  .admin-btn:hover {
+    filter: brightness(1.06);
+  }
+  .admin-btn-secondary {
+    background-color: oklch(var(--admin-surface));
+    color: oklch(var(--admin-foreground));
+    border: 1px solid oklch(var(--admin-border-strong));
+  }
+
+  /* Admin form field: light ground, dark readable text, large target. */
+  .admin-field {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: 0.625rem;
+    border: 1px solid oklch(var(--admin-border-strong));
+    background-color: oklch(var(--admin-surface));
+    color: oklch(var(--admin-foreground));
+    font-size: 1rem;
+    -webkit-text-stroke: 0;
+  }
+  .admin-field::placeholder {
+    color: oklch(var(--admin-muted-foreground));
+    opacity: 1;
+  }
+  .admin-field:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px oklch(var(--admin-ring) / 0.28);
+    border-color: oklch(var(--admin-ring));
+  }
+
+  /* ---- Admin status badges: obvious color + label, large and legible ---- */
+  .admin-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .admin-status-new {
+    background-color: oklch(var(--admin-status-new));
+    color: oklch(var(--admin-status-new-fg));
+  }
+  .admin-status-waiting {
+    background-color: oklch(var(--admin-status-waiting));
+    color: oklch(var(--admin-status-waiting-fg));
+  }
+  .admin-status-action {
+    background-color: oklch(var(--admin-status-action));
+    color: oklch(var(--admin-status-action-fg));
+  }
+  .admin-status-approved {
+    background-color: oklch(var(--admin-status-approved));
+    color: oklch(var(--admin-status-approved-fg));
+  }
+  .admin-status-paid {
+    background-color: oklch(var(--admin-status-paid));
+    color: oklch(var(--admin-status-paid-fg));
+  }
+  .admin-status-confirmed {
+    background-color: oklch(var(--admin-status-confirmed));
+    color: oklch(var(--admin-status-confirmed-fg));
+  }
+  .admin-status-progress {
+    background-color: oklch(var(--admin-status-progress));
+    color: oklch(var(--admin-status-progress-fg));
+  }
+  .admin-status-completed {
+    background-color: oklch(var(--admin-status-completed));
+    color: oklch(var(--admin-status-completed-fg));
+  }
+  .admin-status-cancelled {
+    background-color: oklch(var(--admin-status-cancelled));
+    color: oklch(var(--admin-status-cancelled-fg));
+  }
+
+  /* Respect reduced-motion: freeze the living hive to a still, dimensional
+     field. Depth planes keep their bevels and glow, just stop moving. */
+  @media (prefers-reduced-motion: reduce) {
+    .comb-plane-far,
+    .comb-plane-mid,
+    .comb-plane-near,
+    .comb-breathe,
+    .comb-honey-sheen {
+      animation: none !important;
+    }
+    .comb-breathe {
+      opacity: 0.6;
+    }
+    .notification-badge {
+      animation: none !important;
+    }
   }
 }

@@ -99,7 +99,7 @@ describe("Track deposit card payment options", () => {
     }
 
     // The four handles are the ones the owner specified.
-    expect(CASHAPP_HANDLE).toBe("$Taetae22Wright");
+    expect(CASHAPP_HANDLE).toBe("$thebirdhouse2");
     expect(VENMO_HANDLE).toBe("@Lavona-Wright");
     expect(PAYPAL_ACCOUNT).toBe("tanae Wright");
     expect(CHIME_HANDLE).toBe("$Tanae-Wright-2");
@@ -147,7 +147,7 @@ describe("Track deposit card payment options", () => {
     expect(cashAppLink).not.toBeNull();
     expect(cashAppLink).toHaveAttribute(
       "href",
-      "https://cash.app/$Taetae22Wright",
+      "https://cash.app/$thebirdhouse2",
     );
 
     // Selecting Venmo swaps in the Venmo deep link.

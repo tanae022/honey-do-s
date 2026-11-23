@@ -1,15 +1,30 @@
 import type {
   Appointment,
   BeeView,
+  CustomerNote,
+  CustomerProfileView,
+  CustomerSummary,
+  CustomerView,
   DashboardStats,
   Deposit,
   JobRequestView,
+  MessageView,
+  NotificationView,
   PackageEnrollment,
   Quote,
   Review,
   VisitRecord,
 } from "@/backend";
-import { JobStatus, PaymentMethod, ServiceCategory } from "@/backend";
+import {
+  CustomerStatus,
+  DepositStatus,
+  JobStatus,
+  NotificationKind,
+  PaymentMethod,
+  PreferredContact,
+  QuoteStatus,
+  ServiceCategory,
+} from "@/backend";
 
 /**
  * A fully-populated `JobRequestView` fixture. Every field is explicit so a test
@@ -42,6 +57,17 @@ export function makeQuote(overrides: Partial<Quote> = {}): Quote {
     sentAt: 1_700_000_100_000_000_000n,
     discountApplied: false,
     discountAmount: 0n,
+    status: QuoteStatus.draft,
+    lineItems: [],
+    total: 20_000n,
+    laborCharge: 0n,
+    createdAt: 1_700_000_100_000_000_000n,
+    quoteNumber: "Q-1001",
+    workDescription: "Replace the kitchen faucet.",
+    remainingBalance: 10_000n,
+    materialsCharge: 0n,
+    depositRequired: 10_000n,
+    subtotal: 20_000n,
     ...overrides,
   };
 }
@@ -51,6 +77,7 @@ export function makeDeposit(overrides: Partial<Deposit> = {}): Deposit {
     amount: 10_000n,
     method: PaymentMethod.stripe,
     paid: true,
+    status: DepositStatus.verified,
     paidAt: 1_700_000_200_000_000_000n,
     ...overrides,
   };
@@ -118,6 +145,99 @@ export function makePackage(
     monthlyPrice: 19_900n,
     includedVisits: 4n,
     startedAt: 1_700_000_000_000_000_000n,
+    ...overrides,
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Customer management fixtures                                        */
+/* ------------------------------------------------------------------ */
+
+export function makeCustomerSummary(
+  overrides: Partial<CustomerSummary> = {},
+): CustomerSummary {
+  return {
+    id: 1n,
+    status: CustomerStatus.active,
+    serviceAddress: "123 Honeycomb Lane",
+    fullName: "Ada Lovelace",
+    email: "ada@example.com",
+    phone: "(555) 123-4567",
+    jobCount: 1n,
+    ...overrides,
+  };
+}
+
+export function makeCustomerNote(
+  overrides: Partial<CustomerNote> = {},
+): CustomerNote {
+  return {
+    id: 1n,
+    body: "Gate code is 4821.",
+    createdAt: 1_700_000_000_000_000_000n,
+    ...overrides,
+  };
+}
+
+export function makeCustomerView(
+  overrides: Partial<CustomerView> = {},
+): CustomerView {
+  return {
+    id: 1n,
+    status: CustomerStatus.active,
+    serviceAddress: "123 Honeycomb Lane",
+    createdAt: 1_700_000_000_000_000_000n,
+    fullName: "Ada Lovelace",
+    email: "ada@example.com",
+    preferredContact: PreferredContact.phone,
+    notes: [],
+    phone: "(555) 123-4567",
+    adminNotes: "",
+    ...overrides,
+  };
+}
+
+export function makeCustomerProfile(
+  overrides: Partial<CustomerProfileView> = {},
+): CustomerProfileView {
+  return {
+    completedJobs: [],
+    customer: makeCustomerView(),
+    jobs: [],
+    photoIds: [],
+    appointments: [],
+    cancelledJobs: [],
+    deposits: [],
+    pendingJobs: [],
+    payments: [],
+    messages: [],
+    quotes: [],
+    jobRecords: [],
+    ...overrides,
+  };
+}
+
+export function makeNotification(
+  overrides: Partial<NotificationView> = {},
+): NotificationView {
+  return {
+    id: 1n,
+    title: "New request",
+    body: "Ada Lovelace submitted a new request.",
+    kind: NotificationKind.newCustomer,
+    createdAt: 1_700_000_000_000_000_000n,
+    read: false,
+    ...overrides,
+  };
+}
+
+export function makeMessage(overrides: Partial<MessageView> = {}): MessageView {
+  return {
+    id: 1n,
+    body: "Could you come by Thursday morning instead?",
+    createdAt: 1_700_000_000_000_000_000n,
+    customerId: 1n,
+    fromAdmin: false,
     ...overrides,
   };
 }

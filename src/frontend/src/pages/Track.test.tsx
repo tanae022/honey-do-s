@@ -1,4 +1,9 @@
-import { JobStatus, PaymentMethod } from "@/backend";
+import {
+  DepositStatus,
+  JobStatus,
+  PaymentMethod,
+  type PaymentSummaryView,
+} from "@/backend";
 import { CASHAPP_HANDLE } from "@/lib/jobs";
 import {
   makeAppointment,
@@ -34,6 +39,42 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 import { TrackPage } from "@/pages/Track";
+
+/**
+ * A fully-populated payment summary so a test overrides only what it asserts.
+ * The backend pricing engine is the authoritative source of the final total,
+ * the 10% deposit and the remaining balance the payment page renders.
+ */
+function makePaymentSummary(
+  overrides: Partial<PaymentSummaryView> = {},
+): PaymentSummaryView {
+  return {
+    customerName: "Jamie Rivera",
+    depositAmount: 2_500n,
+    chimeHandle: "$honeydo-chime",
+    adjustedSubtotal: 25_000n,
+    venmoHandle: "@honeydo-venmo",
+    depositStatus: DepositStatus.pending,
+    discountAmount: 5_000n,
+    finalTotal: 25_000n,
+    appointmentConfirmed: false,
+    serviceDescription: "Replace the kitchen faucet.",
+    discountReason: "Spring promo applied",
+    referenceCode: "HD-4F2A9C",
+    payPalHandle: "honeydo@paypal.me",
+    cashAppHandle: "$honeydo",
+    remainingBalance: 22_500n,
+    originalSubtotal: 30_000n,
+    acceptedMethods: [
+      PaymentMethod.payPal,
+      PaymentMethod.cashApp,
+      PaymentMethod.venmo,
+      PaymentMethod.chime,
+    ],
+    taxAmount: 0n,
+    ...overrides,
+  };
+}
 
 async function lookupJob(reference = "HD-4F2A9C") {
   const user = userEvent.setup();
@@ -91,7 +132,7 @@ describe("TrackPage", () => {
     });
   });
 
-  it("shows the 50% deposit and balance breakdown after acceptance", async () => {
+  it("shows the 10% deposit and balance breakdown from the payment summary", async () => {
     const actor = setActor();
     actor.getRequestByReference.mockResolvedValue(
       makeJob({
@@ -99,15 +140,26 @@ describe("TrackPage", () => {
         quote: makeQuote({ amount: 20_000n }),
       }),
     );
+    // $300 subtotal, $50 discount → $250 final, $25 deposit, $225 balance.
+    actor.getPaymentSummary.mockResolvedValue(
+      makePaymentSummary({
+        originalSubtotal: 30_000n,
+        discountAmount: 5_000n,
+        finalTotal: 25_000n,
+        depositAmount: 2_500n,
+        remainingBalance: 22_500n,
+      }),
+    );
 
     await lookupJob();
 
     expect(await screen.findByText("Deposit & balance")).toBeInTheDocument();
-    expect(screen.getByText("Deposit (50%)")).toBeInTheDocument();
+    expect(screen.getByText("Deposit (10%)")).toBeInTheDocument();
     expect(screen.getByText("Balance due")).toBeInTheDocument();
-    // $200 total → $100 deposit, $100 balance.
-    expect(screen.getAllByText("$100.00").length).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText(/deposit due/i)).toBeInTheDocument();
+    // The final quote, the 10% deposit and the remaining balance.
+    expect(screen.getAllByText("$250.00").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("$25.00").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("$225.00").length).toBeGreaterThanOrEqual(1);
   });
 
   it("shows deposit paid and the balance breakdown", async () => {
